@@ -11,6 +11,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.SuggestionSpan
 import helium314.keyboard.latin.SuggestedWords
+import helium314.keyboard.latin.settings.Settings
 import java.util.*
 
 fun getTextWithAutoCorrectionIndicatorUnderline(context: Context?, text: String, locale: Locale?): CharSequence {
@@ -23,6 +24,8 @@ fun getTextWithAutoCorrectionIndicatorUnderline(context: Context?, text: String,
 }
 
 fun getTextWithSuggestionSpan(context: Context, pickedWord: String, suggestedWords: SuggestedWords, locale: Locale): CharSequence {
+    if (!Settings.getValues().mSpellcheckSuggest)
+        return pickedWord
     if (pickedWord.isEmpty() || suggestedWords.isEmpty
         || suggestedWords.isPrediction || suggestedWords.isPunctuationSuggestions
     ) {

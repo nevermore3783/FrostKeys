@@ -222,6 +222,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_SPELLCHECK_SUGGEST = "spellcheck_suggest";
     public static final String PREF_SEND_GIFS_AS_STICKERS = "send_gifs_as_stickers";
     public static final String PREF_USE_5_WORD_SUGGESTION_CHIPS = "use_5_word_suggestion_chips";
+    public static final String PREF_HIDE_MORE_SUGGESTIONS_HINT = "hide_more_suggestions_hint";
 
     // Emoji
     public static final String PREF_EMOJI_MAX_SDK = "emoji_max_sdk";

@@ -2237,7 +2237,7 @@ public final class InputLogic {
     // TODO: Shouldn't this go in some *Utils class instead?
     private CharSequence getTextWithUnderline(final String text) {
         // TODO: Locale should be determined based on context and the text given.
-        return mIsAutoCorrectionIndicatorOn
+        return mIsAutoCorrectionIndicatorOn && Settings.getValues().mSpellcheckSuggest
                 ? SuggestionSpanUtilsKt.getTextWithAutoCorrectionIndicatorUnderline(
                         mLatinIME, text, getDictionaryFacilitatorLocale())
                 : text;

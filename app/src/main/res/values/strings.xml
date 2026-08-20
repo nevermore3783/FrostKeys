@@ -181,6 +181,10 @@
     <string name="center_suggestion_text_to_enter_summary">On pressing space or punctuation, the middle suggestion will be entered</string>
     <string name="use_5_word_suggestion_chips">Use 5 word suggestion chips</string>
     <string name="use_5_word_suggestion_chips_summary">Show 5 word suggestions chips instead of default 3 suggestions</string>
+    <!-- Title of the setting hiding the ellipsis under the middle suggestion -->
+    <string name="hide_more_suggestions_hint">Hide more suggestions marker</string>
+    <!-- Summary of the setting hiding the ellipsis under the middle suggestion -->
+    <string name="hide_more_suggestions_hint_summary">Remove the dots under the middle suggestion. Swiping the strip still opens the other suggestions.</string>
     <!-- Option to enable using next word suggestions. After the user types a space, with this option on, the keyboard will try to predict the next word. -->
     <string name="bigram_prediction">Next-word suggestions</string>
     <!-- Description for "next word suggestion" option. This displays suggestions even when there is no input, based on the previous word. -->
@@ -441,6 +445,57 @@
     <string name="prefs_bottom_row_scale">Bottom row scale</string>
     <!-- Title of the setting for setting side padding -->
     <string name="prefs_side_padding_scale">Side padding scale</string>
+    <!-- Title of the dialog for the liquid glass edge effect -->
+    <string name="liquid_glass_title">Liquid glass</string>
+    <!-- Summary of the liquid glass dialog -->
+    <string name="liquid_glass_summary">A static glass edge along the top of the keyboard, following the corner roundness. Independent of the frosted glass settings.</string>
+    <!-- Title of the entry opening the liquid glass dialog -->
+    <string name="button_adjust_liquid_glass">Adjust liquid glass</string>
+    <!-- Switch turning the whole liquid glass effect on -->
+    <string name="liquid_glass_enabled">Draw liquid glass edge</string>
+    <string name="liquid_glass_profile_light">Light profile</string>
+    <string name="liquid_glass_profile_dark">Dark profile</string>
+    <!-- How the shine is mixed into what is under it -->
+    <string name="liquid_glass_blend_mode">Shine blending</string>
+    <string name="liquid_glass_blend_mode_summary">How the shine mixes with the keyboard under it. Screen and add both brighten, add is the strongest.</string>
+    <string name="liquid_glass_blend_normal">Normal</string>
+    <string name="liquid_glass_blend_screen">Screen</string>
+    <string name="liquid_glass_blend_plus">Add</string>
+
+    <!-- Names and explanations of the individual liquid glass values -->
+    <string name="liquid_rim_intensity">Shine strength</string>
+    <string name="liquid_rim_intensity_summary">How bright the highlight on the edge gets at its peak</string>
+    <string name="liquid_rim_thickness">Shine thickness</string>
+    <string name="liquid_rim_thickness_summary">Width of the bright line running along the edge</string>
+    <string name="liquid_rim_softness">Shine softness</string>
+    <string name="liquid_rim_softness_summary">Keeps the shine a crisp line at zero, spreads it into a glow further up</string>
+    <string name="liquid_light_angle">Light angle</string>
+    <string name="liquid_light_angle_summary">Where the light comes from. Zero puts it straight above the keyboard.</string>
+    <string name="liquid_rim_spread">Shine spread</string>
+    <string name="liquid_rim_spread_summary">A small spread keeps the shine a glint near the light, a large one wraps it around the whole edge</string>
+    <string name="liquid_rim_color">Shine colour</string>
+    <string name="liquid_rim_color_summary">Colour of the highlight, the lens band and the sheen</string>
+    <string name="liquid_counter_rim">Opposite reflection</string>
+    <string name="liquid_counter_rim_summary">A weaker second highlight on the side facing away from the light, the way light carries through real glass</string>
+    <string name="liquid_side_falloff">Side falloff</string>
+    <string name="liquid_side_falloff_summary">How much of the shine survives on the way down the sides. Lower keeps it on the top edge.</string>
+    <string name="liquid_lens_intensity">Edge lensing</string>
+    <string name="liquid_lens_intensity_summary">Brightening just inside the edge, standing in for the way glass bends what is behind it</string>
+    <string name="liquid_lens_depth">Lensing depth</string>
+    <string name="liquid_lens_depth_summary">How far inwards the lensing reaches from the edge</string>
+    <string name="liquid_edge_shadow">Contact shadow</string>
+    <string name="liquid_edge_shadow_summary">A dark line under the shine that seats the glass on the keyboard</string>
+    <string name="liquid_sheen_intensity">Face sheen</string>
+    <string name="liquid_sheen_intensity_summary">A broad band of light across the top of the keyboard, a reflection on the face of the glass</string>
+    <string name="liquid_sheen_height">Sheen height</string>
+    <string name="liquid_sheen_height_summary">How far down the keyboard the sheen reaches</string>
+    <string name="liquid_sheen_angle">Sheen angle</string>
+    <string name="liquid_sheen_angle_summary">Tilt of the sheen band</string>
+    <string name="liquid_tint_color">Glass tint</string>
+    <string name="liquid_tint_color_summary">Colour laid over the whole keyboard surface</string>
+    <string name="liquid_tint_opacity">Tint strength</string>
+    <string name="liquid_tint_opacity_summary">How strongly the tint colours the keyboard. Zero leaves it untinted.</string>
+
     <!-- Title of the setting for rounding the top corners of the keyboard surface -->
     <string name="prefs_keyboard_corner_radius">Keyboard corner roundness</string>
     <!-- Title of the setting for adjusting font size on the keyboard -->
@@ -458,6 +513,12 @@
     <string name="prefs_space_bar_text">Custom text on space bar</string>
     <!-- Title of the setting for adding / removing custom font file -->
     <string name="custom_font">Set custom font from file</string>
+    <!-- Description of the custom font setting while a font file is in use -->
+    <string name="custom_font_loaded">Custom font loaded</string>
+    <!-- Message of the dialog shown when a custom font is already in use -->
+    <string name="custom_font_loaded_message">Load another font file, or go back to the font the app ships with.</string>
+    <!-- Button that removes the loaded custom font file -->
+    <string name="custom_font_reset">Reset to default</string>
     <!-- Title of the setting for adding / removing custom font file used only for emojis -->
     <string name="custom_emoji_font">Set custom emoji font from file</string>
     <!-- Safeguard warning when loading a potentially invalid font file -->
@@ -1094,7 +1155,7 @@ New dictionary:
     <!-- Switch to toggle suggestions when using the spell checker -->
     <string name="spell_check_suggestions">Show spellchecker suggestions</string>
     <!-- Description for toggling suggestions when using the spell checker -->
-    <string name="spell_check_suggestions_summary">Show suggestions when selecting a word with red underline. Requires setting app as default spell checker.</string>
+    <string name="spell_check_suggestions_summary">Underline misspelled and autocorrected words and offer suggestions when selecting them. Turn off to keep text unmarked. Requires setting app as default spell checker.</string>
 
     <string name="klipy_search_hint">Search Klipy</string>
     <string name="tab_gifs">GIFs</string>

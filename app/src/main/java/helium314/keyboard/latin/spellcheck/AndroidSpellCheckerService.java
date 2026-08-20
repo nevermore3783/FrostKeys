@@ -73,6 +73,9 @@ public final class AndroidSpellCheckerService extends SpellCheckerService
 
     // The threshold for a suggestion to be considered "recommended".
     private float mRecommendedThreshold;
+    // Whether the spell checker may report anything at all. When off it stays silent, so editors
+    // do not underline words or offer spelling suggestions for them.
+    private volatile boolean mSuggestSpellcheck = Defaults.PREF_SPELLCHECK_SUGGEST;
     private SettingsValuesForSuggestion mSettingsValuesForSuggestion;
 
     public static final String SINGLE_QUOTE = "'";
@@ -93,6 +96,7 @@ public final class AndroidSpellCheckerService extends SpellCheckerService
         prefs.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(prefs, Settings.PREF_USE_CONTACTS);
         onSharedPreferenceChanged(prefs, Settings.PREF_USE_APPS);
+        onSharedPreferenceChanged(prefs, Settings.PREF_SPELLCHECK_SUGGEST);
         final boolean blockOffensive = prefs.getBoolean(Settings.PREF_BLOCK_POTENTIALLY_OFFENSIVE, Defaults.PREF_BLOCK_POTENTIALLY_OFFENSIVE);
         mSettingsValuesForSuggestion = new SettingsValuesForSuggestion(blockOffensive, false);
         try {
@@ -104,6 +108,18 @@ public final class AndroidSpellCheckerService extends SpellCheckerService
 
     public float getRecommendedThreshold() {
         return mRecommendedThreshold;
+    }
+
+    public boolean isSpellcheckSuggestionsEnabled() {
+        return mSuggestSpellcheck;
+    }
+
+    /**
+     * An empty result with no attributes at all. The editor neither marks the word nor offers
+     * suggestions for it, which is what removes the underline.
+     */
+    public static SuggestionsInfo getSilentSuggestions() {
+        return new SuggestionsInfo(0, EMPTY_STRING_ARRAY);
     }
 
     @Override
@@ -120,7 +136,10 @@ public final class AndroidSpellCheckerService extends SpellCheckerService
         case Settings.PREF_BLOCK_POTENTIALLY_OFFENSIVE -> {
             final boolean blockOffensive = prefs.getBoolean(Settings.PREF_BLOCK_POTENTIALLY_OFFENSIVE, Defaults.PREF_BLOCK_POTENTIALLY_OFFENSIVE);
             mSettingsValuesForSuggestion = new SettingsValuesForSuggestion(blockOffensive, false);
-        }}
+        }
+        case Settings.PREF_SPELLCHECK_SUGGEST ->
+            mSuggestSpellcheck = prefs.getBoolean(Settings.PREF_SPELLCHECK_SUGGEST, Defaults.PREF_SPELLCHECK_SUGGEST);
+        }
     }
 
     @Override

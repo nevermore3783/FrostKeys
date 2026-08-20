@@ -54,6 +54,8 @@ fun CustomFontPreference(setting: Setting, fontFile: File, title: Int) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var showWarningDialog by rememberSaveable { mutableStateOf(false) }
+    // kept in state so the description below updates as soon as a font is loaded or reset
+    var fontLoaded by rememberSaveable { mutableStateOf(fontFile.exists()) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
         val uri = it.data?.data ?: return@rememberLauncherForActivityResult
@@ -69,6 +71,7 @@ fun CustomFontPreference(setting: Setting, fontFile: File, title: Int) {
             } else {
                 fontFile.delete()
                 tempFile.renameTo(fontFile)
+                fontLoaded = true
                 KeyboardTypeface.clearCache()
                 SupportedEmojis.load(ctx)
                 KeyboardSwitcher.getInstance().reloadKeyboard()
@@ -83,6 +86,9 @@ fun CustomFontPreference(setting: Setting, fontFile: File, title: Int) {
         .setType("*/*")
     Preference(
         name = setting.title,
+        description = stringResource(
+            if (fontLoaded) R.string.custom_font_loaded else R.string.settings_system_default
+        ),
         onClick = {
             if (fontFile.exists())
                 showDialog = true
@@ -96,13 +102,15 @@ fun CustomFontPreference(setting: Setting, fontFile: File, title: Int) {
             onNeutral = {
                 showDialog = false
                 fontFile.delete()
+                fontLoaded = false
                 KeyboardTypeface.clearCache()
                 SupportedEmojis.load(ctx)
                 KeyboardSwitcher.getInstance().reloadKeyboard()
             },
-            neutralButtonText = stringResource(R.string.delete),
+            neutralButtonText = stringResource(R.string.custom_font_reset),
             confirmButtonText = stringResource(R.string.load),
-            title = { Text(stringResource(title)) }
+            title = { Text(stringResource(title)) },
+            content = { Text(stringResource(R.string.custom_font_loaded_message)) }
         )
     if (showErrorDialog)
         InfoDialog(stringResource(R.string.file_read_error)) { showErrorDialog = false }
@@ -122,6 +130,7 @@ fun CustomFontPreference(setting: Setting, fontFile: File, title: Int) {
                 showWarningDialog = false
                 fontFile.delete()
                 tempFile.renameTo(fontFile)
+                fontLoaded = true
                 KeyboardTypeface.clearCache()
                 SupportedEmojis.load(ctx)
                 KeyboardSwitcher.getInstance().reloadKeyboard()

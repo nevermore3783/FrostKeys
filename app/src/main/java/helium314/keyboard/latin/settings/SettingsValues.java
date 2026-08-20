@@ -60,6 +60,7 @@ public class SettingsValues {
     // From preferences
     public final boolean mAutoCap;
     public final boolean mFlickSymbolKeys;
+    public final boolean mSpellcheckSuggest;
     public final boolean mVibrateOn;
     public final boolean mVibrateInDndMode;
     public final boolean mSoundOn;
@@ -139,6 +140,7 @@ public class SettingsValues {
     public final boolean mAutoShowToolbar;
     public final boolean mAutoHideToolbar;
     public final boolean mUseFiveWordSuggestionChips;
+    public final boolean mHideMoreSuggestionsHint;
     public final boolean mAlphaAfterEmojiInEmojiView;
     public final boolean mAlphaAfterClipHistoryEntry;
     public final boolean mAlphaAfterSymbolAndSpace;
@@ -194,6 +196,7 @@ public class SettingsValues {
         mToolbarHidingGlobal = isLocked || prefs.getBoolean(Settings.PREF_TOOLBAR_HIDING_GLOBAL, Defaults.PREF_TOOLBAR_HIDING_GLOBAL);
         mAutoCap = prefs.getBoolean(Settings.PREF_AUTO_CAP, Defaults.PREF_AUTO_CAP) && ScriptUtils.scriptSupportsUppercase(mLocale);
         mFlickSymbolKeys = prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS);
+        mSpellcheckSuggest = prefs.getBoolean(Settings.PREF_SPELLCHECK_SUGGEST, Defaults.PREF_SPELLCHECK_SUGGEST);
         mVibrateOn = Settings.readVibrationEnabled(prefs);
         mVibrateInDndMode = prefs.getBoolean(Settings.PREF_VIBRATE_IN_DND_MODE, Defaults.PREF_VIBRATE_IN_DND_MODE);
         mSoundOn = prefs.getBoolean(Settings.PREF_SOUND_ON, Defaults.PREF_SOUND_ON);
@@ -325,6 +328,7 @@ public class SettingsValues {
         mAutoShowToolbar = false;
         mAutoHideToolbar = false;
         mUseFiveWordSuggestionChips = prefs.getBoolean(Settings.PREF_USE_5_WORD_SUGGESTION_CHIPS, Defaults.PREF_USE_5_WORD_SUGGESTION_CHIPS);
+        mHideMoreSuggestionsHint = prefs.getBoolean(Settings.PREF_HIDE_MORE_SUGGESTIONS_HINT, Defaults.PREF_HIDE_MORE_SUGGESTIONS_HINT);
         mAlphaAfterEmojiInEmojiView = prefs.getBoolean(Settings.PREF_ABC_AFTER_EMOJI, Defaults.PREF_ABC_AFTER_EMOJI);
         mAlphaAfterClipHistoryEntry = prefs.getBoolean(Settings.PREF_ABC_AFTER_CLIP, Defaults.PREF_ABC_AFTER_CLIP);
         mAlphaAfterSymbolAndSpace = prefs.getBoolean(Settings.PREF_ABC_AFTER_SYMBOL_SPACE, Defaults.PREF_ABC_AFTER_SYMBOL_SPACE);

@@ -74,6 +74,7 @@ fun AppearanceScreen(
         SettingsWithoutKey.BACKGROUND_IMAGE,
         SettingsWithoutKey.BACKGROUND_IMAGE_LANDSCAPE,
         Settings.PREF_KEYBOARD_CORNER_RADIUS,
+        "adjust_liquid_glass_dialog",
         R.string.settings_category_miscellaneous,
         Settings.PREF_ENABLE_SPLIT_KEYBOARD,
         if (prefs.getBoolean(Settings.PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE, Defaults.PREF_ENABLE_SPLIT_KEYBOARD)
@@ -380,6 +381,23 @@ fun createAppearanceSettings(context: Context) = listOf(
             onClick = { 
                 helium314.keyboard.settings.SettingsActivity.activeOverlay = { hazeState ->
                     helium314.keyboard.settings.dialogs.FrostedGlassAdjustDialog(
+                        hazeState = hazeState,
+                        onDismissRequest = { helium314.keyboard.settings.SettingsActivity.activeOverlay = null }
+                    )
+                }
+            }
+        )
+    },
+    Setting(
+        context, "adjust_liquid_glass_dialog", R.string.button_adjust_liquid_glass,
+        R.string.liquid_glass_summary
+    ) { setting ->
+        Preference(
+            name = setting.title,
+            description = stringResource(R.string.liquid_glass_summary),
+            onClick = {
+                helium314.keyboard.settings.SettingsActivity.activeOverlay = { hazeState ->
+                    helium314.keyboard.settings.dialogs.LiquidGlassAdjustDialog(
                         hazeState = hazeState,
                         onDismissRequest = { helium314.keyboard.settings.SettingsActivity.activeOverlay = null }
                     )

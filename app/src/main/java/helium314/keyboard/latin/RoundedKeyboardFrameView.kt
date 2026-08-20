@@ -35,10 +35,15 @@ class RoundedKeyboardFrameView @JvmOverloads constructor(
 
     private var cachedRadiusPx = -1f
     private val staticDustOverlay = StaticSparkleDustOverlay()
+    private val liquidGlassOverlay = LiquidGlassOverlay()
+    private val liquidGlassListener = Runnable { postInvalidateOnAnimation() }
     private val prefListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == Settings.PREF_KEYBOARD_CORNER_RADIUS) {
             cachedRadiusPx = -1f
             invalidateOutline()
+            postInvalidate()
+        } else if (key != null && key.startsWith(LiquidGlass.PREF_PREFIX)) {
+            LiquidGlass.invalidateCache()
             postInvalidate()
         }
     }
@@ -73,6 +78,7 @@ class RoundedKeyboardFrameView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         context.prefs().registerOnSharedPreferenceChangeListener(prefListener)
+        LiquidGlass.addListener(liquidGlassListener)
         cachedRadiusPx = -1f
         invalidateOutline()
     }
@@ -80,6 +86,7 @@ class RoundedKeyboardFrameView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         context.prefs().unregisterOnSharedPreferenceChangeListener(prefListener)
+        LiquidGlass.removeListener(liquidGlassListener)
         staticDustOverlay.clear()
     }
 
@@ -123,6 +130,21 @@ class RoundedKeyboardFrameView @JvmOverloads constructor(
             staticDustOverlay.clear()
         }
         super.dispatchDraw(canvas)
+        drawLiquidGlass(canvas)
+    }
+
+    /** Painted last, since glass is in front of what it covers. */
+    private fun drawLiquidGlass(canvas: Canvas) {
+        if (!LiquidGlass.isEnabled(context)) return
+        if (cachedRadiusPx < 0f) cachedRadiusPx = keyboardCornerRadiusPx()
+        liquidGlassOverlay.draw(
+            canvas,
+            width,
+            height,
+            cachedRadiusPx,
+            resources.displayMetrics.density,
+            LiquidGlass.activeProfile(context)
+        )
     }
 
     private fun keyboardCornerRadiusPx(): Float {

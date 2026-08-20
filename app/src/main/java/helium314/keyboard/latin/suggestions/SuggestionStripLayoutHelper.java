@@ -446,7 +446,8 @@ final class SuggestionStripLayoutHelper {
         final TextView wordView = mWordViews.get(positionInStrip);
         resetWordViewForStrip(wordView);
         final CharSequence word = wordView.getText();
-        if (positionInStrip == mCenterPositionInStrip && mMoreSuggestionsAvailable) {
+        if (positionInStrip == mCenterPositionInStrip && mMoreSuggestionsAvailable
+                && !Settings.getValues().mHideMoreSuggestionsHint) {
             // TODO: This "more suggestions hint" should have a nicely designed icon.
             wordView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, mMoreSuggestionsHint);
             // HACK: Align with other TextViews that have no compound drawables.

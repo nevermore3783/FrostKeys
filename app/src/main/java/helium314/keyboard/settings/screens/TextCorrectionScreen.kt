@@ -82,6 +82,8 @@ fun TextCorrectionScreen(
             Settings.PREF_ALWAYS_SHOW_SUGGESTIONS_EXCEPT_WEB_TEXT else null,
         if (suggestionsEnabled) Settings.PREF_CENTER_SUGGESTION_TEXT_TO_ENTER else null,
         if (suggestionsEnabled) Settings.PREF_USE_5_WORD_SUGGESTION_CHIPS else null,
+        if (suggestionsEnabled && !prefs.getBoolean(Settings.PREF_USE_5_WORD_SUGGESTION_CHIPS, Defaults.PREF_USE_5_WORD_SUGGESTION_CHIPS))
+            Settings.PREF_HIDE_MORE_SUGGESTIONS_HINT else null,
         if (suggestionsEnabled || autocorrectEnabled) Settings.PREF_SUGGEST_EMOJIS else null,
         if (suggestionsEnabled || autocorrectEnabled) Settings.PREF_INLINE_EMOJI_SEARCH else null,
         Settings.PREF_KEY_USE_PERSONALIZED_DICTS,
@@ -94,8 +96,7 @@ fun TextCorrectionScreen(
         Settings.PREF_USE_APPS,
         if (prefs.getBoolean(Settings.PREF_KEY_USE_PERSONALIZED_DICTS, Defaults.PREF_KEY_USE_PERSONALIZED_DICTS))
             Settings.PREF_ADD_TO_PERSONAL_DICTIONARY else null,
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            Settings.PREF_SPELLCHECK_SUGGEST else null,
+        Settings.PREF_SPELLCHECK_SUGGEST,
     )
     SearchSettingsScreen(
         onClickBack = onClickBack,
@@ -230,6 +231,11 @@ fun createCorrectionSettings(context: Context) = listOf(
         R.string.use_5_word_suggestion_chips, R.string.use_5_word_suggestion_chips_summary
     ) {
         SwitchPreference(it, Defaults.PREF_USE_5_WORD_SUGGESTION_CHIPS)
+    },
+    Setting(context, Settings.PREF_HIDE_MORE_SUGGESTIONS_HINT,
+        R.string.hide_more_suggestions_hint, R.string.hide_more_suggestions_hint_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_HIDE_MORE_SUGGESTIONS_HINT)
     },
     Setting(context, Settings.PREF_SUGGEST_CLIPBOARD_CONTENT,
         R.string.suggest_clipboard_content, R.string.suggest_clipboard_content_summary

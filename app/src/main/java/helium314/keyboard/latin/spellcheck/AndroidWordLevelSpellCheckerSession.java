@@ -256,6 +256,10 @@ public abstract class AndroidWordLevelSpellCheckerSession extends Session {
     protected SuggestionsInfo onGetSuggestionsInternal(
             final TextInfo textInfo, final NgramContext ngramContext, final int suggestionsLimit) {
         try {
+            if (!mService.isSpellcheckSuggestionsEnabled()) {
+                // The user does not want words marked up at all, so report nothing about them.
+                return AndroidSpellCheckerService.getSilentSuggestions();
+            }
             final int currentSequence = mService.getUserDictChangeSequence();
             if (mUserDictChangeSequence != currentSequence) {
                 mSuggestionsCache.clearCache();
