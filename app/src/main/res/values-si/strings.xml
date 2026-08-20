@@ -58,7 +58,6 @@
     <string name="save">"සුරකින්න"</string>
     <string name="subtype_locale">"භාෂාව"</string>
     <string name="keyboard_layout_set">"පිරිසැලසුම"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"යතුරු එබිම් කම්පන කාලපරිච්ඡේදය"</string>
     <string name="prefs_keypress_sound_volume_settings">"යතුරු එබීම් හඬ තීව්‍රතාවය"</string>
     <string name="prefs_key_longpress_timeout_settings">"යතුරු දිගු එබීම් ප්‍රමාදය"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"භෞතික යතුරුපුවරුව සඳහා ඉමොජි"</string>

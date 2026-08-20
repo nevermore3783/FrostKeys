@@ -58,7 +58,6 @@
     <string name="save">"Պահել"</string>
     <string name="subtype_locale">"Lեզու"</string>
     <string name="keyboard_layout_set">"Դասավորություն"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Սեղմման թրթռոցի տևողություն"</string>
     <string name="prefs_keypress_sound_volume_settings">"Սեղմման ձայնի ուժգնությունը"</string>
     <string name="prefs_key_longpress_timeout_settings">"Ստեղնի երկար սեղմման ուշացում"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Ֆիզիկական ստեղնաշարի զմայլիկ"</string>

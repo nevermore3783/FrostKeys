@@ -617,8 +617,66 @@ language, hence "No language". -->
     <string name="day_or_night_day">Day</string>
     <!-- Button for selecting night -->
     <string name="day_or_night_night">Night</string>
-    <!-- Title of the setting for keypress vibration duration -->
-    <string name="prefs_keypress_vibration_duration_settings">Keypress vibration duration</string>
+    <!-- Title of the setting for picking which haptic is played on keypress -->
+    <string name="prefs_keypress_haptic">Keypress vibration</string>
+    <!-- Summary of the setting for picking which haptic is played on keypress -->
+    <string name="prefs_keypress_haptic_summary">Haptic feedback played when a key is pressed</string>
+
+    <!-- Category of the two suggested keypress haptics -->
+    <string name="haptic_category_recommended">Recommended</string>
+    <!-- Category of the haptics Android defines for its own UI events -->
+    <string name="haptic_category_system">System haptic</string>
+    <!-- Category of the vibration effects the device provides -->
+    <string name="haptic_category_effect">Device effect</string>
+    <!-- Category of the single building blocks the vibration hardware provides -->
+    <string name="haptic_category_primitive">Haptic primitive</string>
+
+    <!-- Name of the keypress haptic that imitates the short tap of Gboard -->
+    <string name="haptic_crisp_tap">Crisp tap</string>
+
+    <!-- Names of the haptics Android defines for its own UI events, see HapticFeedbackConstants -->
+    <string name="haptic_keyboard_tap">Keyboard tap</string>
+    <string name="haptic_keyboard_release">Keyboard release</string>
+    <string name="haptic_virtual_key">Virtual key</string>
+    <string name="haptic_virtual_key_release">Virtual key release</string>
+    <string name="haptic_clock_tick">Clock tick</string>
+    <string name="haptic_context_click">Context click</string>
+    <string name="haptic_text_handle_move">Text handle move</string>
+    <string name="haptic_long_press">Long press</string>
+    <string name="haptic_gesture_start">Gesture start</string>
+    <string name="haptic_gesture_end">Gesture end</string>
+    <string name="haptic_confirm">Confirm</string>
+    <string name="haptic_reject">Reject</string>
+    <string name="haptic_toggle_on">Toggle on</string>
+    <string name="haptic_toggle_off">Toggle off</string>
+    <string name="haptic_drag_start">Drag start</string>
+    <string name="haptic_gesture_threshold_activate">Gesture threshold reached</string>
+    <string name="haptic_gesture_threshold_deactivate">Gesture threshold left</string>
+    <string name="haptic_segment_tick">Segment tick</string>
+    <string name="haptic_segment_frequent_tick">Frequent segment tick</string>
+
+    <!-- Names of the vibration effects the device provides, see VibrationEffect -->
+    <string name="haptic_effect_tick">Tick</string>
+    <string name="haptic_effect_click">Click</string>
+    <string name="haptic_effect_heavy_click">Heavy click</string>
+    <string name="haptic_effect_double_click">Double click</string>
+
+    <!-- Names of the building blocks the vibration hardware provides, see VibrationEffect.Composition -->
+    <string name="haptic_primitive_click">Click</string>
+    <string name="haptic_primitive_tick">Tick</string>
+    <string name="haptic_primitive_low_tick">Low tick</string>
+    <string name="haptic_primitive_thud">Thud</string>
+    <string name="haptic_primitive_spin">Spin</string>
+    <string name="haptic_primitive_quick_rise">Quick rise</string>
+    <string name="haptic_primitive_slow_rise">Slow rise</string>
+    <string name="haptic_primitive_quick_fall">Quick fall</string>
+
+    <!-- How strongly a haptic primitive is played -->
+    <string name="haptic_strength_light">light</string>
+    <string name="haptic_strength_medium">medium</string>
+    <string name="haptic_strength_strong">strong</string>
+    <!-- Name of a haptic primitive together with its strength, e.g. "Click (light)" -->
+    <string name="haptic_name_with_strength">%1$s (%2$s)</string>
     <!-- Title of the setting for keypress sound volume -->
     <string name="prefs_keypress_sound_volume_settings">Keypress sound volume</string>
     <!-- Title of the setting for key long press delay -->

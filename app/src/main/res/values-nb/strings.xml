@@ -58,7 +58,6 @@
     <string name="save">"Lagre"</string>
     <string name="subtype_locale">"Språk"</string>
     <string name="keyboard_layout_set">"Oppsett"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Vibrasjonstid ved tastetrykk"</string>
     <string name="prefs_keypress_sound_volume_settings">"Lydstyrke ved tastetrykk"</string>
     <string name="prefs_key_longpress_timeout_settings">"Forsinkelse ved lange tastetrykk"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji for fysisk tastatur"</string>

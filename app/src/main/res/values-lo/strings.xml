@@ -59,7 +59,6 @@
     <string name="save">"ບັນທຶກ"</string>
     <string name="subtype_locale">"ພາສາ"</string>
     <string name="keyboard_layout_set">"ຮູບແບບ"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"ໄລຍະເວລາຂອງການສັ່ນໃນການກົດປຸ່ມ"</string>
     <string name="prefs_keypress_sound_volume_settings">"ລະດັບສຽງຂອງການກົດປຸ່ມ"</string>
     <string name="prefs_key_longpress_timeout_settings">"ໄລຍະເວລາຂອງການກົດປຸ່ມ"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji ສຳ​ລັບ​ແປ້ນ​ພິມ​ແທ້"</string>

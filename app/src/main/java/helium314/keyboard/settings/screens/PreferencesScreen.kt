@@ -15,10 +15,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.edit
 import helium314.keyboard.keyboard.KeyboardLayoutSet
+import helium314.keyboard.event.KeyboardHaptics
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager
 import helium314.keyboard.latin.R
@@ -49,8 +51,11 @@ import helium314.keyboard.latin.utils.previewDark
 fun PreferencesScreen(
     onClickBack: () -> Unit,
 ) {
-    val prefs = LocalContext.current.prefs()
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
+    val ctx = LocalContext.current
+    val prefs = ctx.prefs()
+    // the keyboard service may not be running when the settings are opened from the launcher
+    remember(ctx) { AudioAndHapticFeedbackManager.init(ctx.applicationContext) }
+    val b = (ctx.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
     if ((b?.value ?: 0) < 0)
         Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     val clipboardHistoryEnabled = prefs.getBoolean(Settings.PREF_ENABLE_CLIPBOARD_HISTORY, Defaults.PREF_ENABLE_CLIPBOARD_HISTORY)
@@ -67,7 +72,7 @@ fun PreferencesScreen(
         if (AudioAndHapticFeedbackManager.getInstance().hasVibrator())
             Settings.PREF_VIBRATE_ON else null,
         if (prefs.getBoolean(Settings.PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON))
-            Settings.PREF_VIBRATION_DURATION_SETTINGS else null,
+            Settings.PREF_KEYPRESS_HAPTIC else null,
         if (prefs.getBoolean(Settings.PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON))
             Settings.PREF_VIBRATE_IN_DND_MODE else null,
         Settings.PREF_SOUND_ON,
@@ -202,17 +207,22 @@ fun createPreferencesSettings(context: Context) = listOf(
     Setting(context, Settings.PREF_CLIPBOARD_HISTORY_PINNED_FIRST, R.string.clipboard_history_pinned_first) {
         SwitchPreference(it, Defaults.PREF_CLIPBOARD_HISTORY_PINNED_FIRST)
     },
-    Setting(context, Settings.PREF_VIBRATION_DURATION_SETTINGS, R.string.prefs_keypress_vibration_duration_settings) { setting ->
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = Defaults.PREF_VIBRATION_DURATION_SETTINGS,
-            description = {
-                if (it < 0) stringResource(R.string.settings_system_default)
-                else stringResource(R.string.abbreviation_unit_milliseconds, it.toString())
-            },
-            range = -1f..100f,
-            onValueChanged = { it?.let { AudioAndHapticFeedbackManager.getInstance().vibrate(it.toLong()) } }
+    Setting(context, Settings.PREF_KEYPRESS_HAPTIC, R.string.prefs_keypress_haptic, R.string.prefs_keypress_haptic_summary) { setting ->
+        val ctx = LocalContext.current
+        val view = LocalView.current
+        val feedbackManager = AudioAndHapticFeedbackManager.getInstance()
+        val items = remember(ctx) {
+            AudioAndHapticFeedbackManager.init(ctx.applicationContext)
+            KeyboardHaptics.supported(feedbackManager.vibrator).map { it.getName(ctx) to it.id }
+        }
+        ListPreference(
+            setting,
+            items,
+            Defaults.PREF_KEYPRESS_HAPTIC,
+            itemDescriptions = { id -> ctx.getString(KeyboardHaptics.byId(id).categoryRes) },
+            // keep the list open so the whole list can be tried out before settling on one
+            confirmImmediately = false,
+            onItemFocused = { id -> feedbackManager.previewHaptic(KeyboardHaptics.byId(id), view) }
         )
     },
     Setting(context, Settings.PREF_KEYPRESS_SOUND_VOLUME, R.string.prefs_keypress_sound_volume_settings) { setting ->

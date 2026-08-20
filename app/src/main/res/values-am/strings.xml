@@ -58,7 +58,6 @@
     <string name="save">"አስቀምጥ"</string>
     <string name="subtype_locale">"ቋንቋ"</string>
     <string name="keyboard_layout_set">"አቀማመጥ"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"የቁልፍ ጭነት ንዝረት ርዝመት"</string>
     <string name="prefs_keypress_sound_volume_settings">"የቁልፍ ጭነት ድምጽ መጠን"</string>
     <string name="prefs_key_longpress_timeout_settings">"የሰሌዳ ቁልፍ ጠቅታ በመጫን መዘግየት"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"ስሜት ገላጭ ምስሎች ለአካላዊ ቁልፍ ሰሌዳ"</string>

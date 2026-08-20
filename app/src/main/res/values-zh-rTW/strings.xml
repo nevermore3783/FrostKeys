@@ -58,7 +58,6 @@
     <string name="save">"儲存"</string>
     <string name="subtype_locale">"語言"</string>
     <string name="keyboard_layout_set">"配置"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"按鍵震動持續時間"</string>
     <string name="prefs_keypress_sound_volume_settings">"按鍵音量"</string>
     <string name="prefs_key_longpress_timeout_settings">"按鍵長按延遲"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"透過實體鍵盤啟用表情符號"</string>

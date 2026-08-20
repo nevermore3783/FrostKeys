@@ -58,7 +58,6 @@
     <string name="save">"Сачувај"</string>
     <string name="subtype_locale">"Језик"</string>
     <string name="keyboard_layout_set">"Распоред"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Трајање вибрације при притиску"</string>
     <string name="prefs_keypress_sound_volume_settings">"Јачина звука при притиску"</string>
     <string name="prefs_key_longpress_timeout_settings">"Задржавање при дугом притиску"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Емоџи за физичку тастатуру"</string>

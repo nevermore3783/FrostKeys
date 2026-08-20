@@ -58,7 +58,6 @@
     <string name="save">"जोड़ें"</string>
     <string name="subtype_locale">"भाषा"</string>
     <string name="keyboard_layout_set">"लेआउट"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"बटन दबाने पर कंपन (वाइब्रेशन) का समय"</string>
     <string name="prefs_keypress_sound_volume_settings">"बटन दबाने पर आवाज़ का स्तर"</string>
     <string name="prefs_key_longpress_timeout_settings">"देर तक बटन दबाए रखने का समय"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"कीबोर्ड के लिए स्माइलीज़"</string>

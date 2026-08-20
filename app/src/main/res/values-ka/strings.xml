@@ -58,7 +58,6 @@
     <string name="save">"შენახვა"</string>
     <string name="subtype_locale">"ენა"</string>
     <string name="keyboard_layout_set">"განლაგება"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"კლავიშზე დაჭერის ვიბრაციის ხანგრძლივობა"</string>
     <string name="prefs_keypress_sound_volume_settings">"კლავიშზე დაჭერის ხმა"</string>
     <string name="prefs_key_longpress_timeout_settings">"კლავიშზე გრძელი დაჭერის დაყოვნება"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"სიცილაკები ფიზიკური კლავიატურისთვის"</string>

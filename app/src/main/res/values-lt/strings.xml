@@ -58,7 +58,6 @@
     <string name="save">"Išsaugoti"</string>
     <string name="subtype_locale">"Kalba"</string>
     <string name="keyboard_layout_set">"Išdėstymas"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Vibrav. paspaudus mygt. trukmė"</string>
     <string name="prefs_keypress_sound_volume_settings">"Garso paspaudus mygt. garsumas"</string>
     <string name="prefs_key_longpress_timeout_settings">"Klavišo ilgo paspaudimo delsa"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Fizinės klaviatūros jaustukai"</string>

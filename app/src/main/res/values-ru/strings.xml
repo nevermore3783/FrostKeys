@@ -61,7 +61,6 @@
     <string name="save">Сохранить</string>
     <string name="subtype_locale">Язык</string>
     <string name="keyboard_layout_set">Раскладка</string>
-    <string name="prefs_keypress_vibration_duration_settings">Длительность вибрации при нажатии клавиши</string>
     <string name="prefs_keypress_sound_volume_settings">Громкость звука при нажатии клавиш</string>
     <string name="prefs_key_longpress_timeout_settings">Длительность долгого нажатия</string>
     <string name="prefs_enable_emoji_alt_physical_key">Эмодзи для физической клавиатуры</string>

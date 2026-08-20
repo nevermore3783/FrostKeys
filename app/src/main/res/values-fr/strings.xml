@@ -79,7 +79,6 @@
     <string name="day_or_night_image">Définir l\'image pour le mode jour ou nuit ?</string>
     <string name="day_or_night_day">Jour</string>
     <string name="day_or_night_night">Nuit</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Durée de vibration des touches"</string>
     <string name="prefs_keypress_sound_volume_settings">"Volume du son des touches"</string>
     <string name="prefs_key_longpress_timeout_settings">"Délai d\'un appui long sur les touches"</string>
     <string name="prefs_enable_emoji_alt_physical_key">Émojis pour clavier physique</string>

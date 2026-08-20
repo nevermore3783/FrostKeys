@@ -58,7 +58,6 @@
     <string name="save">"Yadda saxla"</string>
     <string name="subtype_locale">"Dil"</string>
     <string name="keyboard_layout_set">"Tərtibat"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Vibrasiyalı klikləmə müddəti"</string>
     <string name="prefs_keypress_sound_volume_settings">"Səsli klikləmə səsi"</string>
     <string name="prefs_key_longpress_timeout_settings">"Klavişi uzun müddət basmada gecikmə"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Fiziki klaviatura üçün emoji"</string>

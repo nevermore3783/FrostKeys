@@ -58,7 +58,6 @@
     <string name="save">"Simpan"</string>
     <string name="subtype_locale">"Bahasa"</string>
     <string name="keyboard_layout_set">"Reka letak"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Tempoh getaran tekan kekunci"</string>
     <string name="prefs_keypress_sound_volume_settings">"Kelantangan bunyi tekan kekunci"</string>
     <string name="prefs_key_longpress_timeout_settings">"Lengah tekan lama kekunci"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji untuk papan kekunci fizikal"</string>

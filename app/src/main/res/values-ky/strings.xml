@@ -58,7 +58,6 @@
     <string name="save">"Сактоо"</string>
     <string name="subtype_locale">"Тил"</string>
     <string name="keyboard_layout_set">"Баскычтардын жайгашуусу"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Басылган баскычтын дирлдөө узактгы"</string>
     <string name="prefs_keypress_sound_volume_settings">"Басылган баскычтын үнүнүн катуулугу"</string>
     <string name="prefs_key_longpress_timeout_settings">"Баскычты көпкө басуунун узактыгы"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Тышкы тергич үчүн быйтыкчалар"</string>

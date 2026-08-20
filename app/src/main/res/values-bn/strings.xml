@@ -112,7 +112,6 @@
     <string name="save">সংরক্ষণ করুন</string>
     <string name="subtype_locale">ভাষা</string>
     <string name="keyboard_layout_set">লেআউট</string>
-    <string name="prefs_keypress_vibration_duration_settings">কিপ্রেস কম্পনের স্থিতিকাল</string>
     <string name="prefs_keypress_sound_volume_settings">কিপ্রেস শব্দের ভলিউম</string>
     <string name="prefs_key_longpress_timeout_settings">দীর্ঘ কিপ্রেসের বিলম্ব</string>
     <string name="prefs_enable_emoji_alt_physical_key">ভৌত কিবোর্ডের জন্য ইমোজি</string>

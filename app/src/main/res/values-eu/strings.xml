@@ -58,7 +58,6 @@
     <string name="save">"Gorde"</string>
     <string name="subtype_locale">"Hizkuntza"</string>
     <string name="keyboard_layout_set">"Diseinua"</string>
-    <string name="prefs_keypress_vibration_duration_settings">Tekla sakatzean dardararen iraupena</string>
     <string name="prefs_keypress_sound_volume_settings">"Tekla sakatzearen bolumena"</string>
     <string name="prefs_key_longpress_timeout_settings">"Luze sakatzearen atzerapena"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Teklatu fisikorako emojiak"</string>

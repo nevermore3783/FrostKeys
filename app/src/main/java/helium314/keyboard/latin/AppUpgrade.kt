@@ -2,7 +2,10 @@ package helium314.keyboard.latin
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
+import helium314.keyboard.event.CrispTapHaptic
+import helium314.keyboard.event.SystemDefaultHaptic
 import helium314.keyboard.compat.isDeviceLocked
 import helium314.keyboard.compat.isUserLocked
 import helium314.keyboard.keyboard.ColorSetting
@@ -51,6 +54,7 @@ import kotlin.collections.set
 private var isRestoringDefaultBackup = false
 private const val PREF_DEFAULT_BACKUP_RESTORED = "default_backup_restored"
 private const val VERSION_FROSTED_DUST_DEFAULT_OFF = 2409
+private const val OLD_PREF_VIBRATION_DURATION = "vibration_duration_settings"
 
 fun checkVersionUpgrade(context: Context) {
     val prefs = context.prefs()
@@ -696,6 +700,7 @@ private object AppUpgrade {
                     putString(Settings.PREF_SPACE_VERTICAL_SWIPE, prefs.getString(Settings.PREF_SPACE_VERTICAL_SWIPE, "")!!.uppercase())
             }
         }
+        migrateVibrationDurationToHaptic(prefs)
         if (!restoredDefaultBackupForFreshInstall
                 && oldVersion < VERSION_FROSTED_DUST_DEFAULT_OFF
                 && !prefs.contains(Settings.PREF_FROSTED_DUST_ENABLED)) {
@@ -704,6 +709,25 @@ private object AppUpgrade {
         upgradeToolbarPrefs(prefs)
         LayoutUtilsCustom.onLayoutFileChanged() // just to be sure
         prefs.edit { putInt(Settings.PREF_VERSION_CODE, BuildConfig.VERSION_CODE) }
+    }
+
+    /**
+     * The keypress vibration used to be a duration in milliseconds, which does nothing but run the
+     * motor for that long. Only the "system default" end of that slider has an equivalent now,
+     * anything else becomes the crisp tap, which is what a custom duration was reaching for.
+     */
+    private fun migrateVibrationDurationToHaptic(prefs: SharedPreferences) {
+        if (!prefs.contains(OLD_PREF_VIBRATION_DURATION)) return
+        val duration = try {
+            prefs.getInt(OLD_PREF_VIBRATION_DURATION, -1)
+        } catch (e: ClassCastException) {
+            -1
+        }
+        val haptic = if (duration < 0) SystemDefaultHaptic else CrispTapHaptic
+        prefs.edit {
+            remove(OLD_PREF_VIBRATION_DURATION)
+            putString(Settings.PREF_KEYPRESS_HAPTIC, haptic.id)
+        }
     }
 
     // old variant for old folder structure

@@ -58,7 +58,6 @@
     <string name="save">"Opslaan"</string>
     <string name="subtype_locale">"Taal"</string>
     <string name="keyboard_layout_set">"Lay-out"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Trilingsduur bij toetsgebruik"</string>
     <string name="prefs_keypress_sound_volume_settings">"Geluidsvolume bij toetsgebruik"</string>
     <string name="prefs_key_longpress_timeout_settings">Vertraging bij lang drukken</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji voor fysiek toetsenbord"</string>

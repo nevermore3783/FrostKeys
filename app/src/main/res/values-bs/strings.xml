@@ -60,7 +60,6 @@
     <string name="save">"Sačuvaj"</string>
     <string name="subtype_locale">"Jezik"</string>
     <string name="keyboard_layout_set">"Raspored tipki"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Trajanje vibracije pritisnute tipke"</string>
     <string name="prefs_keypress_sound_volume_settings">"Jačina zvuka pritisnute tipke"</string>
     <string name="prefs_key_longpress_timeout_settings">"Odgoda dugim pritiskom tipke"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji za fizičku tastaturu"</string>

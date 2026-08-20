@@ -58,7 +58,6 @@
     <string name="save">"Сақтау"</string>
     <string name="subtype_locale">"Тіл"</string>
     <string name="keyboard_layout_set">"Орналасу"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Пернені басқан кездегі діріл ұзақтығы"</string>
     <string name="prefs_keypress_sound_volume_settings">"Пернені басқан кездегі дыбыс деңгейі"</string>
     <string name="prefs_key_longpress_timeout_settings">"Пернені ұзақ басу кідірісі"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Қатты пернетақтадан енгізілетін эмодзи"</string>

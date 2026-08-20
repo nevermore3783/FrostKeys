@@ -58,7 +58,6 @@
     <string name="save">"حفظ"</string>
     <string name="subtype_locale">"اللغة"</string>
     <string name="keyboard_layout_set">"التخطيط"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"مدة اهتزاز الضغط على المفاتيح"</string>
     <string name="prefs_keypress_sound_volume_settings">"مستوى صوت الضغط على المفاتيح"</string>
     <string name="prefs_key_longpress_timeout_settings">"مهلة الضغط مع الاستمرار على المفاتيح"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"الرموز التعبيرية للوحة مفاتيح فعلية"</string>

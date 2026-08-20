@@ -59,7 +59,6 @@
     <string name="save">"I-save"</string>
     <string name="subtype_locale">"Wika"</string>
     <string name="keyboard_layout_set">"Layout"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Tagal ng vibration ng keypress"</string>
     <string name="prefs_keypress_sound_volume_settings">"Volume ng tunog ng keypress"</string>
     <string name="prefs_key_longpress_timeout_settings">"Delay sa long press ng key"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji para sa pisikal na keyboard"</string>

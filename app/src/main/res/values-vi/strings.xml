@@ -58,7 +58,6 @@
     <string name="save">"Lưu"</string>
     <string name="subtype_locale">"Ngôn ngữ"</string>
     <string name="keyboard_layout_set">"Bố cục"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Thời gian rung khi nhấn phím"</string>
     <string name="prefs_keypress_sound_volume_settings">"Âm lượng khi nhấn phím"</string>
     <string name="prefs_key_longpress_timeout_settings">"Thời gian nhấn và giữ phím"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Biểu tượng cảm xúc cho bàn phím vật lý"</string>

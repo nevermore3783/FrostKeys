@@ -58,7 +58,6 @@
     <string name="save">"保存"</string>
     <string name="subtype_locale">"言語"</string>
     <string name="keyboard_layout_set">"レイアウト"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"キー操作バイブレーションの振動時間"</string>
     <string name="prefs_keypress_sound_volume_settings">"キー操作音の音量"</string>
     <string name="prefs_key_longpress_timeout_settings">"キーの長押し時間"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"物理キーボードの絵文字"</string>

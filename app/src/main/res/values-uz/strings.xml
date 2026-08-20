@@ -58,7 +58,6 @@
     <string name="save">"Saqlash"</string>
     <string name="subtype_locale">"Til"</string>
     <string name="keyboard_layout_set">"Terilma"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Tugma bosilganda tebranish vaqti"</string>
     <string name="prefs_keypress_sound_volume_settings">"Tugma bosilgandagi ovoz"</string>
     <string name="prefs_key_longpress_timeout_settings">"Tugmani bosib turish"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Tashqi klaviatura uchun kulgichlar"</string>

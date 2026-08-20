@@ -59,7 +59,6 @@
     <string name="save">"រក្សាទុក"</string>
     <string name="subtype_locale">"ភាសា"</string>
     <string name="keyboard_layout_set">"ប្លង់"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"ថិរវេលា​​ញ័រ​​ពេល​ចុច​គ្រាប់ចុច"</string>
     <string name="prefs_keypress_sound_volume_settings">"កម្រិត​សំឡេង​ពេល​ចុច​គ្រាប់​ចុច"</string>
     <string name="prefs_key_longpress_timeout_settings">"ពន្យារពេល​​​ចុច​គ្រាប់​ចុច​ឲ្យ​​យូរ"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"សញ្ញាអារម្មណ៍សម្រាប់ក្តារចុចពិតប្រាកដ"</string>

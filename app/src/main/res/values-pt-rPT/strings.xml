@@ -59,7 +59,6 @@
     <string name="save">"Guardar"</string>
     <string name="subtype_locale">"Idioma"</string>
     <string name="keyboard_layout_set">Esquema</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Duração vibr. ao premir teclas"</string>
     <string name="prefs_keypress_sound_volume_settings">"Volume do som ao premir teclas"</string>
     <string name="prefs_key_longpress_timeout_settings">"Atraso ao manter tecla premida"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji para teclado físico"</string>

@@ -59,7 +59,6 @@
     <string name="save">"Zapisz"</string>
     <string name="subtype_locale">"Język"</string>
     <string name="keyboard_layout_set">"Układ"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Wibracja przy naciśniętym klawiszu"</string>
     <string name="prefs_keypress_sound_volume_settings">"Głośność przy naciśniętym klawiszu"</string>
     <string name="prefs_key_longpress_timeout_settings">"Opóźnienie przy długim naciśnięciu"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emotikony z klawiatury fizycznej"</string>

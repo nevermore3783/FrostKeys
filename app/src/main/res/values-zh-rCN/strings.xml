@@ -58,7 +58,6 @@
     <string name="save">"保存"</string>
     <string name="subtype_locale">"语言"</string>
     <string name="keyboard_layout_set">"布局"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"按键振动时长"</string>
     <string name="prefs_keypress_sound_volume_settings">"按键音量"</string>
     <string name="prefs_key_longpress_timeout_settings">"按键长按延迟"</string>
     <string name="prefs_enable_emoji_alt_physical_key">用于物理键盘的表情符号</string>

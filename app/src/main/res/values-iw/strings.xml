@@ -58,7 +58,6 @@
     <string name="save">שמירה</string>
     <string name="subtype_locale">"שפה"</string>
     <string name="keyboard_layout_set">"פריסה"</string>
-    <string name="prefs_keypress_vibration_duration_settings">משך הרטט של לחיצת מקש</string>
     <string name="prefs_keypress_sound_volume_settings">"עוצמת קול של לחיצת מקש"</string>
     <string name="prefs_key_longpress_timeout_settings">"השהיית לחיצה ארוכה על מקש"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"אמוג\'י בשביל מקלדת פיזית"</string>

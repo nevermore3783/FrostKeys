@@ -2,7 +2,9 @@ package helium314.keyboard.event
 
 import android.view.HapticFeedbackConstants
 
-enum class HapticEvent(@JvmField val feedbackConstant: Int, @JvmField val allowCustomDuration: Boolean) {
+/** [usesSelectedHaptic] marks the events that play the haptic the user picked in the settings,
+ *  everything else keeps whatever the system plays for the matching UI event. */
+enum class HapticEvent(@JvmField val feedbackConstant: Int, @JvmField val usesSelectedHaptic: Boolean) {
     NO_HAPTICS(HapticFeedbackConstants.NO_HAPTICS, false),
     KEY_PRESS(HapticFeedbackConstants.KEYBOARD_TAP, true),
 //    KEY_RELEASE(
@@ -14,7 +16,7 @@ enum class HapticEvent(@JvmField val feedbackConstant: Int, @JvmField val allowC
 //        ?
 //    ),
     KEY_LONG_PRESS(HapticFeedbackConstants.LONG_PRESS, true),
-    KEY_REPEAT(HapticFeedbackConstants.KEYBOARD_TAP, allowCustomDuration = false),
+    KEY_REPEAT(HapticFeedbackConstants.KEYBOARD_TAP, usesSelectedHaptic = false),
 //    GESTURE_START(
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            HapticFeedbackConstants.GESTURE_START

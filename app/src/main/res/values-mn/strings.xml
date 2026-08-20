@@ -58,7 +58,6 @@
     <string name="save">"Хадгалах"</string>
     <string name="subtype_locale">"Хэл"</string>
     <string name="keyboard_layout_set">"Байршил"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Товч дарах чичиргээний хугацаа"</string>
     <string name="prefs_keypress_sound_volume_settings">"Товчны дууны түвшин"</string>
     <string name="prefs_key_longpress_timeout_settings">"Товчны удаан даралтын тохиргоо"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Бодит гарт зориулсан эможи"</string>

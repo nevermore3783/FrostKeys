@@ -20,6 +20,9 @@ fun <T: Any> ListPreference(
     items: List<Pair<String, T>>,
     default: T,
     itemDescriptions: ((T) -> String?)? = null,
+    /** when false the dialog stays open until the selection is confirmed, useful for previewing */
+    confirmImmediately: Boolean = true,
+    onItemFocused: ((T) -> Unit)? = null,
     onChanged: (T) -> Unit = { }
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
@@ -42,7 +45,9 @@ fun <T: Any> ListPreference(
             selectedItem = selected,
             title = { Text(setting.title) },
             getItemName = { it.first },
-            getItemDescription = { itemDescriptions?.invoke(it.second) }
+            getItemDescription = { itemDescriptions?.invoke(it.second) },
+            confirmImmediately = confirmImmediately,
+            onItemFocused = onItemFocused?.let { callback -> { item: Pair<String, T> -> callback(item.second) } }
         )
     }
 }

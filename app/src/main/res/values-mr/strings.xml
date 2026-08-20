@@ -58,7 +58,6 @@
     <string name="save">"सेव्ह करा"</string>
     <string name="subtype_locale">"भाषा"</string>
     <string name="keyboard_layout_set">"लेआउट"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"की दाबल्यानंतरचा व्हायब्रेट कालावधी"</string>
     <string name="prefs_keypress_sound_volume_settings">"की दाबल्यावर आवाजाची तीव्रता"</string>
     <string name="prefs_key_longpress_timeout_settings">"की जास्त दाबण्यात विलंब"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"वास्तविक कीबोर्डसाठी इमोजी"</string>

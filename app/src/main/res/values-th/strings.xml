@@ -59,7 +59,6 @@
     <string name="save">"บันทึก"</string>
     <string name="subtype_locale">"ภาษา"</string>
     <string name="keyboard_layout_set">"การจัดวาง"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"ระยะเวลาการสั่นเมื่อกดแป้นพิมพ์"</string>
     <string name="prefs_keypress_sound_volume_settings">"ระดับเสียงเมื่อกดแป้นพิมพ์"</string>
     <string name="prefs_key_longpress_timeout_settings">"การหน่วงเวลาของการกดแป้นค้าง"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"อีโมจิสำหรับแป้นพิมพ์บนเครื่อง"</string>

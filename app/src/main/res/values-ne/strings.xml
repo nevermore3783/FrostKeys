@@ -58,7 +58,6 @@
     <string name="save">"सुरक्षित गर्नुहोस्"</string>
     <string name="subtype_locale">"भाषा"</string>
     <string name="keyboard_layout_set">"लेआउट"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"कुञ्जी थिचाइ भाइब्रेसन अवधि"</string>
     <string name="prefs_keypress_sound_volume_settings">"कुञ्जी थिचाइ आवाज भोल्युम"</string>
     <string name="prefs_key_longpress_timeout_settings">"कुञ्जीको लामो थिचाइमा ढिलाइ"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"भौतिक किबोर्डको लागि इमोजी"</string>

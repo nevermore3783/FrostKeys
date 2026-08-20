@@ -58,7 +58,6 @@
     <string name="save">"ذخیره"</string>
     <string name="subtype_locale">"زبان"</string>
     <string name="keyboard_layout_set">"چیدمان"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"مدت لرزش با فشار کلید"</string>
     <string name="prefs_keypress_sound_volume_settings">"میزان صدا با فشار کلید"</string>
     <string name="prefs_key_longpress_timeout_settings">"تأخیر فشار طولانی کلید"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"اموجی برای صفحه‌کلید فیزیکی"</string>

@@ -58,7 +58,6 @@
     <string name="save">"சேமி"</string>
     <string name="subtype_locale">"மொழி"</string>
     <string name="keyboard_layout_set">"தளவமைப்பு"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"விசையழுத்த அதிர்வின் காலஅளவு"</string>
     <string name="prefs_keypress_sound_volume_settings">"விசையழுத்த ஒலியளவு"</string>
     <string name="prefs_key_longpress_timeout_settings">"விசைக்கான நீண்ட அழுத்த நேரம்"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"கைமுறை விசைப்பலகைக்கான ஈமோஜி"</string>

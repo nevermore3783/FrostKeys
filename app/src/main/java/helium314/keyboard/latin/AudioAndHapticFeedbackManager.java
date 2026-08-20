@@ -9,10 +9,13 @@ package helium314.keyboard.latin;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Vibrator;
-import android.view.HapticFeedbackConstants;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import helium314.keyboard.event.HapticEvent;
+import helium314.keyboard.event.KeyboardHaptic;
+import helium314.keyboard.event.KeyboardHaptics;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.settings.SettingsValues;
@@ -67,32 +70,14 @@ public final class AudioAndHapticFeedbackManager {
         return mVibrator != null && mVibrator.hasVibrator();
     }
 
-    public void vibrate(final long milliseconds) {
-        if (mVibrator == null || milliseconds <= 0) {
-            return;
-        }
-        if (android.os.Build.VERSION.SDK_INT >= 31) {
-            try {
-                boolean[] ok = mVibrator.arePrimitivesSupported(
-                        android.os.VibrationEffect.Composition.PRIMITIVE_CLICK);
-                if (ok.length > 0 && ok[0]) {
-                    final float scale = Math.min(1f, milliseconds / 50f);
-                    mVibrator.vibrate(
-                            android.os.VibrationEffect.startComposition()
-                                    .addPrimitive(
-                                            android.os.VibrationEffect.Composition.PRIMITIVE_CLICK,
-                                            scale)
-                                    .compose(),
-                            new android.os.VibrationAttributes.Builder()
-                                    .setUsage(android.os.VibrationAttributes.USAGE_TOUCH)
-                                    .build());
-                    return;
-                }
-            } catch (Exception e) {
-                // fall through to the old path
-            }
-        }
-        mVibrator.vibrate(milliseconds);
+    @Nullable
+    public Vibrator getVibrator() {
+        return mVibrator;
+    }
+
+    /** plays {@code haptic} once, so the settings can preview what was picked */
+    public void previewHaptic(final KeyboardHaptic haptic, final View view) {
+        haptic.play(view, mVibrator, HapticEvent.KEY_PRESS);
     }
 
     private boolean reevaluateIfSoundIsOn() {
@@ -123,23 +108,19 @@ public final class AudioAndHapticFeedbackManager {
     }
 
     public void performHapticFeedback(final View viewToPerformHapticFeedbackOn, final HapticEvent hapticEvent) {
-        if (!mSettingsValues.mVibrateOn || (mDoNotDisturb && !mSettingsValues.mVibrateInDndMode)) {
+        if (mSettingsValues == null || !mSettingsValues.mVibrateOn
+                || (mDoNotDisturb && !mSettingsValues.mVibrateInDndMode)) {
             return;
         }
         if (hapticEvent == HapticEvent.NO_HAPTICS) {
             // Avoid surprises with the handling of HapticFeedbackConstants.NO_HAPTICS
             return;
         }
-        if (hapticEvent.allowCustomDuration && mSettingsValues.mKeypressVibrationDuration >= 0) {
-            vibrate(mSettingsValues.mKeypressVibrationDuration);
-            return;
-        }
-        // Go ahead with the system default
-        if (viewToPerformHapticFeedbackOn != null) {
-            viewToPerformHapticFeedbackOn.performHapticFeedback(
-                    hapticEvent.feedbackConstant,
-                    HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-        }
+        final KeyboardHaptic haptic = hapticEvent.usesSelectedHaptic
+                ? mSettingsValues.mKeypressHaptic
+                // gesture and repeat keep whatever the system plays for the matching event
+                : KeyboardHaptics.SYSTEM_DEFAULT;
+        haptic.play(viewToPerformHapticFeedbackOn, mVibrator, hapticEvent);
     }
 
     public void onSettingsChanged(final SettingsValues settingsValues) {

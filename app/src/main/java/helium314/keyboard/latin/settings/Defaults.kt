@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.util.TypedValue
 import android.view.Gravity
+import helium314.keyboard.event.CrispTapHaptic
 import helium314.keyboard.keyboard.KeyboardActionListener
 import helium314.keyboard.keyboard.KeyboardTheme
 import helium314.keyboard.latin.BuildConfig
@@ -112,7 +113,8 @@ object Defaults {
     const val PREF_SUGGEST_PUNCTUATION = false
     const val PREF_SUGGEST_CLIPBOARD_CONTENT = true
     const val PREF_GESTURE_INPUT = true
-    const val PREF_VIBRATION_DURATION_SETTINGS = -1
+    @JvmField
+    val PREF_KEYPRESS_HAPTIC = CrispTapHaptic.id
     const val PREF_KEYPRESS_SOUND_VOLUME = -0.01f
     const val PREF_KEY_LONGPRESS_TIMEOUT = 300
     const val PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY = true

@@ -58,7 +58,6 @@
     <string name="save">"Saglabāt"</string>
     <string name="subtype_locale">"Valoda"</string>
     <string name="keyboard_layout_set">"Izkārtojums"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Taust. nosp. vibrācijas ilgums"</string>
     <string name="prefs_keypress_sound_volume_settings">"Taustiņu nosp. skaņas skaļums"</string>
     <string name="prefs_key_longpress_timeout_settings">"Taustiņa ilgās nosp. noildze"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emocijzīmes fiziskajai tastatūrai"</string>

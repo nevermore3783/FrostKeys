@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.core.util.TypedValueCompat;
 
 import helium314.keyboard.compat.ConfigurationCompatKt;
+import helium314.keyboard.event.KeyboardHaptic;
+import helium314.keyboard.event.KeyboardHaptics;
 import helium314.keyboard.compat.IsLockedCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
 import helium314.keyboard.keyboard.KeyboardTheme;
@@ -155,7 +157,7 @@ public class SettingsValues {
     // Deduced settings
     public final boolean mSuggestionStripHiddenPerUserSettings;
     public final boolean mSecondaryStripVisible;
-    public final int mKeypressVibrationDuration;
+    public final KeyboardHaptic mKeypressHaptic;
     public final float mKeypressSoundVolume;
     public final boolean mAutoCorrectionEnabledPerUserSettings;
     public final boolean mAutoCorrectEnabled;
@@ -249,7 +251,7 @@ public class SettingsValues {
 
         // Compute other readable settings
         mKeyLongpressTimeout = prefs.getInt(Settings.PREF_KEY_LONGPRESS_TIMEOUT, Defaults.PREF_KEY_LONGPRESS_TIMEOUT);
-        mKeypressVibrationDuration = prefs.getInt(Settings.PREF_VIBRATION_DURATION_SETTINGS, Defaults.PREF_VIBRATION_DURATION_SETTINGS);
+        mKeypressHaptic = KeyboardHaptics.fromPrefs(prefs);
         mKeypressSoundVolume = prefs.getFloat(Settings.PREF_KEYPRESS_SOUND_VOLUME, Defaults.PREF_KEYPRESS_SOUND_VOLUME);
         mEnableEmojiAltPhysicalKey = prefs.getBoolean(Settings.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY, Defaults.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY);
         mGestureInputEnabled = JniUtils.sHaveGestureLib && prefs.getBoolean(Settings.PREF_GESTURE_INPUT, Defaults.PREF_GESTURE_INPUT);
@@ -445,8 +447,8 @@ public class SettingsValues {
         sb.append("" + mLocale);
         sb.append("\n   mInputAttributes = ");
         sb.append("" + mInputAttributes);
-        sb.append("\n   mKeypressVibrationDuration = ");
-        sb.append("" + mKeypressVibrationDuration);
+        sb.append("\n   mKeypressHaptic = ");
+        sb.append("" + mKeypressHaptic.id);
         sb.append("\n   mKeypressSoundVolume = ");
         sb.append("" + mKeypressSoundVolume);
         sb.append("\n   mAutoCorrectEnabled = ");

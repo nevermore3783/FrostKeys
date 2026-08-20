@@ -59,7 +59,6 @@
     <string name="save">"ಉಳಿಸಿ"</string>
     <string name="subtype_locale">"ಭಾಷೆ"</string>
     <string name="keyboard_layout_set">"ಲೇಔಟ್"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"ಕೀಒತ್ತುವ ವೈಬ್ರೇಷನ್‌‌ ಅವಧಿ"</string>
     <string name="prefs_keypress_sound_volume_settings">"ಕೀಒತ್ತುವ ಶಬ್ದದ ವಾಲ್ಯೂಮ್"</string>
     <string name="prefs_key_longpress_timeout_settings">"ಕೀಯ ದೀರ್ಘ ಒತ್ತುವ ವಿಳಂಬ"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"ಭೌತಿಕ ಕೀಬೋರ್ಡ್‌ಗೆ ಎಮೋಜಿ"</string>

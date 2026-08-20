@@ -58,7 +58,6 @@
     <string name="save">"Vista"</string>
     <string name="subtype_locale">"Tungumál"</string>
     <string name="keyboard_layout_set">"Skipan"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Lengd lyklatitrings"</string>
     <string name="prefs_keypress_sound_volume_settings">"Styrkur lyklahljóða"</string>
     <string name="prefs_key_longpress_timeout_settings">"Töf áður en lykli er haldið inni"</string>
     <string name="prefs_enable_emoji_alt_physical_key">Tjáningartákn fyrir vélbúnaðarlyklaborð</string>

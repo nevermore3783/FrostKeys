@@ -58,7 +58,6 @@
     <string name="save">"Gardar"</string>
     <string name="subtype_locale">"Idioma"</string>
     <string name="keyboard_layout_set">"Deseño"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Duración vibración ao premer teclas"</string>
     <string name="prefs_keypress_sound_volume_settings">"Volume do son ao premer teclas"</string>
     <string name="prefs_key_longpress_timeout_settings">"Retardo de pulsación prolongada"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emojis para o teclado físico"</string>

@@ -49,7 +49,6 @@
     <string name="remove">"আঁতৰাওক"</string>
     <string name="save">"ছেভ কৰক"</string>
     <string name="keyboard_layout_set">"চানেকি"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"কী টিপিলে হোৱা কম্পনৰ কাল-দৈৰ্ঘ্য"</string>
     <string name="prefs_keypress_sound_volume_settings">"কী টিপিলে হোৱা ধ্বনিৰ মাত্ৰা"</string>
     <string name="prefs_key_longpress_timeout_settings">"কী দীঘলীয়াকৈ টিপি ৰখাৰ সময়"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"কায়িক কীব\'ৰ্ডৰ বাবে ইম\'জী"</string>

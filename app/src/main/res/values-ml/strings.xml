@@ -58,7 +58,6 @@
     <string name="save">"സംരക്ഷിക്കുക"</string>
     <string name="subtype_locale">"ഭാഷ"</string>
     <string name="keyboard_layout_set">"ലേ‌ഔട്ട്"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"കീ അമർത്തുമ്പോഴുള്ള വൈബ്രേഷൻ ദൈർഘ്യം"</string>
     <string name="prefs_keypress_sound_volume_settings">"കീ അമർത്തുമ്പോഴുള്ള ശബ്‌ദ വോളിയം"</string>
     <string name="prefs_key_longpress_timeout_settings">"കീ അമർത്തിപ്പിടിക്കുന്നതിലെ കാലതാമസം"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"പ്രത്യക്ഷ കീബോഡിനുള്ള ഇമോജി"</string>

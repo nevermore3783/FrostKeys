@@ -58,7 +58,6 @@
     <string name="save">Salva</string>
     <string name="subtype_locale">"Lingua"</string>
     <string name="keyboard_layout_set">"Layout"</string>
-    <string name="prefs_keypress_vibration_duration_settings">Durata vibrazione tasti</string>
     <string name="prefs_keypress_sound_volume_settings">Volume del suono dei tasti</string>
     <string name="prefs_key_longpress_timeout_settings">Durata della pressione lunga dei tasti</string>
     <string name="prefs_enable_emoji_alt_physical_key">Tasto fisico per passare alle emoji</string>

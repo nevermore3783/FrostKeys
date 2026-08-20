@@ -58,7 +58,6 @@
     <string name="save">"Spara"</string>
     <string name="subtype_locale">"Språk"</string>
     <string name="keyboard_layout_set">"Layout"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Vibrationslängd vid tangenttryck"</string>
     <string name="prefs_keypress_sound_volume_settings">"Volym vid tangenttryck"</string>
     <string name="prefs_key_longpress_timeout_settings">Fördröjning för långt tangenttryck</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji för fysiskt tangentbord"</string>

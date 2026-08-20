@@ -42,6 +42,8 @@ fun <T: Any> ListPickerDialog(
     getItemDescription: (@Composable (T) -> String?)? = null,
     confirmImmediately: Boolean = true,
     showRadioButtons: Boolean = true,
+    /** called every time an item is tapped, also when the selection still needs to be confirmed */
+    onItemFocused: ((T) -> Unit)? = null,
 ) {
     var selected by remember { mutableStateOf(selectedItem) }
     val state = rememberLazyListState()
@@ -73,6 +75,7 @@ fun <T: Any> ListPickerDialog(
                                         onItemSelected(item)
                                     }
                                     selected = item
+                                    onItemFocused?.invoke(item)
                                 }
                                 .padding(
                                     horizontal = if (showRadioButtons) 8.dp else 16.dp,
@@ -89,6 +92,7 @@ fun <T: Any> ListPickerDialog(
                                             onItemSelected(item)
                                         }
                                         selected = item
+                                        onItemFocused?.invoke(item)
                                     }
                                 )
                             Column(modifier = Modifier.weight(1f)) {

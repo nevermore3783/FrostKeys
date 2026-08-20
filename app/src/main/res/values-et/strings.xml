@@ -58,7 +58,6 @@
     <string name="save">"Salvesta"</string>
     <string name="subtype_locale">"Keel"</string>
     <string name="keyboard_layout_set">"Paigutus"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Klahvivajutuse vibreerimise kestus"</string>
     <string name="prefs_keypress_sound_volume_settings">"Klahvivajutuse helitugevus"</string>
     <string name="prefs_key_longpress_timeout_settings">"Pika klahvivajutuse viide"</string>
     <string name="prefs_enable_emoji_alt_physical_key">Füüsilise klahvistiku emoji</string>

@@ -58,7 +58,6 @@
     <string name="save">"Simpan"</string>
     <string name="subtype_locale">"Bahasa"</string>
     <string name="keyboard_layout_set">"Tata Letak"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Durasi getar saat tekan tombol"</string>
     <string name="prefs_keypress_sound_volume_settings">"Volume suara saat tekan tombol"</string>
     <string name="prefs_key_longpress_timeout_settings">"Penundaan tekan lama tombol"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji untuk keyboard fisik"</string>

@@ -59,7 +59,6 @@
     <string name="save">"Hifadhi"</string>
     <string name="subtype_locale">"Lugha"</string>
     <string name="keyboard_layout_set">"Mpangilio"</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Bonyeza kitufe cha muda wa kutetema"</string>
     <string name="prefs_keypress_sound_volume_settings">"Bonyeza kitufe cha kiwango cha sauti"</string>
     <string name="prefs_key_longpress_timeout_settings">"Ucheleweshaji unapobofya kitufe na kushikilia"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emoji za kibodi halisi"</string>

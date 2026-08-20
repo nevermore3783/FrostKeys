@@ -59,7 +59,6 @@
     <string name="save">"Uložit"</string>
     <string name="subtype_locale">"Jazyk"</string>
     <string name="keyboard_layout_set">Rozložení</string>
-    <string name="prefs_keypress_vibration_duration_settings">"Délka vibrace při stisknutí klávesy"</string>
     <string name="prefs_keypress_sound_volume_settings">"Hlasitost stisknutí klávesy"</string>
     <string name="prefs_key_longpress_timeout_settings">"Prodleva dlouhého stisknutí"</string>
     <string name="prefs_enable_emoji_alt_physical_key">"Emodži pro fyzickou klávesnici"</string>
