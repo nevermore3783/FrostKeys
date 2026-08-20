@@ -562,9 +562,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     fun showPinnedToolbarKeys() {
         toolbarContainer.isVisible = false
         populatePinnedKeys()
-        suggestionsStrip.isVisible = false
-        suggestionsChipScroll.isVisible = false
-        pinnedKeys.isVisible = slotsState.value.isNotEmpty()
+        applyContainerVisibility(strip = false, chips = false, pinned = slotsState.value.isNotEmpty())
         // Swap access point icon to back arrow while menu is open
         setAccessPointMenuOpen(true)
     }
@@ -920,6 +918,11 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     private fun shouldShowSuggestionContent(words: SuggestedWords = suggestedWords): Boolean {
+        if (Settings.getValues().mHidePlaceholderSuggestions && words.isPrediction) {
+            // predictions are what briefly appear between a typed word and an empty field, and
+            // showing them turns one transition into two
+            return false
+        }
         return !words.isEmpty && !words.isPunctuationSuggestions && words.getWordCountToShow() > 0
     }
 
@@ -929,16 +932,12 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
     private fun updateSuggestionContainersVisibility(showSuggestions: Boolean) {
         if (isPinnedToolbarDragActive) {
-            suggestionsStrip.isVisible = false
-            suggestionsChipScroll.isVisible = false
-            pinnedKeys.isVisible = true
+            applyContainerVisibility(strip = false, chips = false, pinned = true)
             return
         }
         val hasPinnedKeys = slotsState.value.isNotEmpty()
         if (isAccessPointMenuOpen) {
-            suggestionsStrip.isVisible = false
-            suggestionsChipScroll.isVisible = false
-            pinnedKeys.isVisible = hasPinnedKeys
+            applyContainerVisibility(strip = false, chips = false, pinned = hasPinnedKeys)
             return
         }
         val toolbarMode = Settings.getValues().mToolbarMode
@@ -953,9 +952,31 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
                 !preferPinnedKeys &&
                 (isExternalSuggestionVisible || shouldShowSuggestionContent())
         val showChips = showSuggestionContent && !isExternalSuggestionVisible && shouldUseChipSuggestions()
-        suggestionsStrip.fadeVisibility(showSuggestionContent && !showChips)
-        suggestionsChipScroll.fadeVisibility(showChips)
-        pinnedKeys.fadeVisibility(showSuggestions && allowPinnedKeys && !showSuggestionContent && hasPinnedKeys)
+        applyContainerVisibility(
+            strip = showSuggestionContent && !showChips,
+            chips = showChips,
+            pinned = showSuggestions && allowPinnedKeys && !showSuggestionContent && hasPinnedKeys
+        )
+    }
+
+    /**
+     * Swaps the three containers that share the strip.
+     *
+     * They sit on top of each other, so fading one in while the other is still fading out shows
+     * the toolbar keys ghosted over the suggestions. The outgoing one therefore goes first and
+     * the incoming one waits for it, which keeps the whole thing within the configured length
+     * while never showing two of them at once.
+     */
+    private fun applyContainerVisibility(strip: Boolean, chips: Boolean, pinned: Boolean) {
+        val targets = listOf(
+            suggestionsStrip to strip,
+            suggestionsChipScroll to chips,
+            pinnedKeys to pinned
+        )
+        val anythingLeaving = targets.any { (view, visible) -> !visible && view.isVisible }
+        targets.forEach { (view, visible) ->
+            view.fadeVisibility(visible, delayIn = anythingLeaving)
+        }
     }
 
     /**
@@ -964,9 +985,11 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
      * The animation runs on the view property animator, so it is driven by the display's own
      * frame callbacks and stays smooth at any refresh rate.
      */
-    private fun View.fadeVisibility(visible: Boolean) {
+    private fun View.fadeVisibility(visible: Boolean, delayIn: Boolean = false) {
         val sv = Settings.getValues()
-        val duration = if (sv.mStripCrossfade) sv.mStripCrossfadeDuration.toLong() else 0L
+        val full = if (sv.mStripCrossfade) sv.mStripCrossfadeDuration.toLong() else 0L
+        // half out, half in, so the two halves add up to the length that was asked for
+        val duration = if (delayIn) full / 2 else full
         // the strip is laid out once while it is still being constructed, and there is nothing
         // to transition from at that point
         if (duration <= 0L || !isAttachedToWindow) {
@@ -989,6 +1012,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
             }
             isVisible = true
             animate().alpha(1f).scaleX(1f).scaleY(1f)
+                .setStartDelay(if (delayIn) duration else 0L)
                 .setDuration(duration)
                 .setInterpolator(DecelerateInterpolator(1.7f))
                 .start()
@@ -1000,6 +1024,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
                 return
             }
             animate().alpha(0f).scaleX(ENTER_SCALE).scaleY(ENTER_SCALE)
+                .setStartDelay(0L)
                 .setDuration(duration)
                 .setInterpolator(AccelerateInterpolator(1.4f))
                 .withEndAction {

@@ -42,6 +42,7 @@ import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.KeyBackgroundUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
+import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.MoreSuggestions;
 import helium314.keyboard.latin.suggestions.MoreSuggestionsView;
 import helium314.keyboard.latin.utils.TypefaceUtils;
@@ -424,18 +425,35 @@ public class KeyboardView extends View {
         if (key != mReboundKey) {
             return 0f;
         }
-        final int duration = Math.max(1, Settings.getValues().mKeyReleaseAnimDuration * 2);
+        final SettingsValues sv = Settings.getValues();
+        final int duration = Math.max(1, sv.mFlickReboundDuration);
         final long elapsed = android.view.animation.AnimationUtils.currentAnimationTimeMillis() - mReboundStartTime;
         final float t = elapsed / (float) duration;
         if (t >= 1f) {
             mReboundKey = null;
             return 0f;
         }
-        // a bounce that decays to nothing, so the label overshoots once and settles
-        final float amplitude = Settings.getValues().mFlickReboundStrength / 100f
-                * key.getHeight() * MAX_REBOUND_TRAVEL;
+        final float amplitude = sv.mFlickReboundStrength / 100f * key.getHeight() * MAX_REBOUND_TRAVEL;
         postInvalidateOnAnimation();
-        return (float) (amplitude * Math.sin(t * Math.PI * 2.2) * (1f - t));
+        return amplitude * reboundShape(t, sv.mFlickReboundStyle);
+    }
+
+    /** The path the label takes back to its place, from a plain glide to a decaying bounce. */
+    private static float reboundShape(final float t, final int style) {
+        switch (style) {
+            case REBOUND_SPRINGY:
+                // overshoots and settles
+                return (float) (Math.sin(t * Math.PI * 2.2) * (1f - t));
+            case REBOUND_EASE_OUT: {
+                // starts fully displaced and eases back, quickly at first
+                final float remaining = 1f - t;
+                return remaining * remaining;
+            }
+            case REBOUND_SMOOTH:
+            default:
+                // a single soft rise and fall, no overshoot at all
+                return (float) ((1f - Math.cos(t * 2f * Math.PI)) * 0.5f * (1f - t));
+        }
     }
 
     /**
@@ -469,7 +487,8 @@ public class KeyboardView extends View {
         params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
 
         final float pressProgress = mKeyPressAnimator.progressOf(key);
-        final float keyScale = KeyPressAnimator.keyScale(pressProgress);
+        final boolean isSpaceBar = key.getCode() == Constants.CODE_SPACE;
+        final float keyScale = KeyPressAnimator.keyScale(pressProgress, isSpaceBar);
         final float centerX = key.getDrawWidth() * 0.5f;
         final float centerY = key.getHeight() * 0.5f;
         final int keyScaleSave;
@@ -483,18 +502,22 @@ public class KeyboardView extends View {
         if (!key.isSpacer()) {
             final Drawable background = key.selectBackgroundDrawable(
                     mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground, mActionKeyBackground);
+            // Most theme styles paint the key with mBackgroundPaint rather than through the
+            // drawable, so the press brightness has to be put on both to reach every style.
             final ColorFilter highlight = mKeyPressAnimator.highlightFilter(pressProgress, mIsNightTheme);
             if (highlight != null) {
                 background.setColorFilter(highlight);
+                mBackgroundPaint.setColorFilter(highlight);
                 onDrawKeyBackground(key, canvas, background);
                 background.clearColorFilter();
+                mBackgroundPaint.setColorFilter(null);
             } else {
                 onDrawKeyBackground(key, canvas, background);
             }
         }
         // the label may shrink further than the key does, and fades out while the keyboard is
         // being used as a trackpad
-        final float labelScale = KeyPressAnimator.labelScale(pressProgress);
+        final float labelScale = KeyPressAnimator.labelScale(pressProgress, isSpaceBar);
         final float reboundOffset = reboundOffsetOf(key);
         final int labelSave;
         if (labelScale != 1f || reboundOffset != 0f) {
@@ -540,6 +563,10 @@ public class KeyboardView extends View {
     private static final float FLICK_SYMBOL_TRAVEL = 0.3f;
     /** how far the label swings on a full strength flick rebound, as a share of the key height */
     private static final float MAX_REBOUND_TRAVEL = 0.22f;
+    /** the shapes offered for the flick rebound */
+    private static final int REBOUND_SMOOTH = 0;
+    private static final int REBOUND_EASE_OUT = 1;
+    private static final int REBOUND_SPRINGY = 2;
 
     /** Draws the symbol a flick is pulling into the middle of the key. */
     private void onDrawFlickLabel(@NonNull final Key key, @NonNull final Canvas canvas,

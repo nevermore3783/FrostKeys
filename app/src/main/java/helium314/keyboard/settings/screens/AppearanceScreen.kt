@@ -77,6 +77,8 @@ fun AppearanceScreen(
         "adjust_liquid_glass_dialog",
         Settings.PREF_KEY_PRESS_SCALE,
         Settings.PREF_KEY_PRESS_LABEL_SCALE,
+        Settings.PREF_SPACE_PRESS_SCALE,
+        Settings.PREF_SPACE_PRESS_LABEL_SCALE,
         Settings.PREF_KEY_PRESS_HIGHLIGHT,
         if (prefs.getInt(Settings.PREF_KEY_PRESS_HIGHLIGHT, Defaults.PREF_KEY_PRESS_HIGHLIGHT) > 0)
             Settings.PREF_KEY_PRESS_HIGHLIGHT_MODE else null,
@@ -89,6 +91,8 @@ fun AppearanceScreen(
         Settings.PREF_POPUP_KEYS_BLUR,
         if (prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR))
             Settings.PREF_POPUP_KEYS_BLUR_RADIUS else null,
+        if (prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR))
+            Settings.PREF_POPUP_KEYS_PANEL_OPACITY else null,
         R.string.settings_category_miscellaneous,
         Settings.PREF_ENABLE_SPLIT_KEYBOARD,
         if (prefs.getBoolean(Settings.PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE, Defaults.PREF_ENABLE_SPLIT_KEYBOARD)
@@ -420,6 +424,24 @@ fun createAppearanceSettings(context: Context) = listOf(
             description = { if (it >= 100) stringResource(R.string.key_press_scale_off) else "$it%" }
         )
     },
+    Setting(context, Settings.PREF_SPACE_PRESS_SCALE, R.string.space_press_scale, R.string.space_press_scale_summary) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_SPACE_PRESS_SCALE,
+            range = 85f..100f,
+            description = { if (it >= 100) stringResource(R.string.key_press_scale_off) else "$it%" }
+        )
+    },
+    Setting(context, Settings.PREF_SPACE_PRESS_LABEL_SCALE, R.string.space_press_label_scale) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_SPACE_PRESS_LABEL_SCALE,
+            range = 60f..100f,
+            description = { if (it >= 100) stringResource(R.string.key_press_scale_off) else "$it%" }
+        )
+    },
     Setting(context, Settings.PREF_KEY_PRESS_HIGHLIGHT, R.string.key_press_highlight, R.string.key_press_highlight_summary) { setting ->
         SliderPreference(
             name = setting.title,
@@ -484,6 +506,17 @@ fun createAppearanceSettings(context: Context) = listOf(
             key = setting.key,
             default = Defaults.PREF_POPUP_KEYS_BLUR_RADIUS,
             range = 10f..100f,
+            description = { "$it%" }
+        )
+    },
+    Setting(context, Settings.PREF_POPUP_KEYS_PANEL_OPACITY, R.string.popup_keys_panel_opacity,
+        R.string.popup_keys_panel_opacity_summary
+    ) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_POPUP_KEYS_PANEL_OPACITY,
+            range = 20f..100f,
             description = { "$it%" }
         )
     },

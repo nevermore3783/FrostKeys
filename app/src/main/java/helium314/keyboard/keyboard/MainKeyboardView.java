@@ -551,6 +551,15 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         }
     }
 
+    // Implements {@link DrawingProxy#onKeyReleasedForTrackpad(Key)}.
+    @Override
+    public void onKeyReleasedForTrackpad(@NonNull final Key key) {
+        key.onReleased();
+        mKeyPressAnimator.reset(key);
+        dismissKeyPreviewWithoutDelay(key);
+        invalidateKey(key);
+    }
+
     // Implements {@link DrawingProxy#setTrackpadActive(boolean)}.
     @Override
     public void setTrackpadActive(final boolean active) {
@@ -926,10 +935,17 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     @Override
     protected void onDrawKeyTopVisuals(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
+        final float labelHide = getLabelHideProgress();
         if (key.altCodeWhileTyping() && key.isEnabled()) {
-            params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
+            // these keys normally insist on being fully opaque, but they still have to fade out
+            // with everything else while the keyboard is being used as a trackpad
+            params.mAnimAlpha = (int) (Constants.Color.ALPHA_OPAQUE * (1f - labelHide));
         }
         super.onDrawKeyTopVisuals(key, canvas, paint, params);
+        if (labelHide >= 1f) {
+            // nothing below this point should be drawn once the labels are gone
+            return;
+        }
         final int code = key.getCode();
         if (code == Constants.CODE_SPACE) {
             // If input language are explicitly selected.

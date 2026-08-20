@@ -82,4 +82,10 @@ public interface DrawingProxy {
 
     /** Play the spring-back of a key whose symbol was just entered by a flick. */
     void startFlickRebound(@NonNull Key key);
+
+    /**
+     * Drop a key straight back to its resting look. Used when the spacebar stops being a key
+     * being held and becomes the trackpad surface.
+     */
+    void onKeyReleasedForTrackpad(@NonNull Key key);
 }

@@ -74,12 +74,23 @@ fun PreferencesScreen(
             Settings.PREF_FLICK_REBOUND else null,
         if (prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS)
                 && prefs.getBoolean(Settings.PREF_FLICK_REBOUND, Defaults.PREF_FLICK_REBOUND))
+            Settings.PREF_FLICK_REBOUND_STYLE else null,
+        if (prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS)
+                && prefs.getBoolean(Settings.PREF_FLICK_REBOUND, Defaults.PREF_FLICK_REBOUND))
             Settings.PREF_FLICK_REBOUND_STRENGTH else null,
+        if (prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS)
+                && prefs.getBoolean(Settings.PREF_FLICK_REBOUND, Defaults.PREF_FLICK_REBOUND))
+            Settings.PREF_FLICK_REBOUND_DURATION else null,
         Settings.PREF_SPACEBAR_TRACKPAD,
         if (prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD))
             Settings.PREF_SPACEBAR_TRACKPAD_HIDE_LABELS else null,
         if (prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD))
             Settings.PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY else null,
+        if (prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD))
+            Settings.PREF_SPACEBAR_TRACKPAD_LINE_SNAP else null,
+        if (prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD))
+            Settings.PREF_SPACEBAR_TRACKPAD_LONG_PRESS else null,
+        Settings.PREF_DELETE_SWIPE_WORDS,
         if (AudioAndHapticFeedbackManager.getInstance().hasVibrator())
             Settings.PREF_VIBRATE_ON else null,
         if (prefs.getBoolean(Settings.PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON))
@@ -150,6 +161,38 @@ fun createPreferencesSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_FLICK_REBOUND, R.string.flick_rebound, R.string.flick_rebound_summary) {
         SwitchPreference(it, Defaults.PREF_FLICK_REBOUND)
+    },
+    Setting(context, Settings.PREF_FLICK_REBOUND_STYLE, R.string.flick_rebound_style) { setting ->
+        val items = listOf(
+            stringResource(R.string.flick_rebound_style_smooth) to 0,
+            stringResource(R.string.flick_rebound_style_ease) to 1,
+            stringResource(R.string.flick_rebound_style_springy) to 2
+        )
+        ListPreference(setting, items, Defaults.PREF_FLICK_REBOUND_STYLE)
+    },
+    Setting(context, Settings.PREF_FLICK_REBOUND_DURATION, R.string.flick_rebound_duration) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_FLICK_REBOUND_DURATION,
+            range = 80f..900f,
+            description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
+        )
+    },
+    Setting(context, Settings.PREF_SPACEBAR_TRACKPAD_LINE_SNAP, R.string.spacebar_trackpad_line_snap,
+        R.string.spacebar_trackpad_line_snap_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_SPACEBAR_TRACKPAD_LINE_SNAP)
+    },
+    Setting(context, Settings.PREF_SPACEBAR_TRACKPAD_LONG_PRESS, R.string.spacebar_trackpad_long_press,
+        R.string.spacebar_trackpad_long_press_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_SPACEBAR_TRACKPAD_LONG_PRESS)
+    },
+    Setting(context, Settings.PREF_DELETE_SWIPE_WORDS, R.string.delete_swipe_words,
+        R.string.delete_swipe_words_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_DELETE_SWIPE_WORDS)
     },
     Setting(context, Settings.PREF_FLICK_REBOUND_STRENGTH, R.string.flick_rebound_strength) { setting ->
         SliderPreference(

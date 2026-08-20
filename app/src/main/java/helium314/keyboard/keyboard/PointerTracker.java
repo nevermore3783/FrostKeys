@@ -174,6 +174,12 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
     /** true while the spacebar is driving the cursor in both directions at once */
     private boolean mIsInTrackpad;
+    /** which way the last line change went, used to make the cursor stick to a line */
+    private int mTrackpadLastLineDirection;
+    /** extra travel demanded for a second line change in a row when line snapping is on */
+    private static final float TRACKPAD_LINE_SNAP_FACTOR = 1.8f;
+    /** how much further the finger travels per step when the delete swipe selects whole words */
+    private static final float DELETE_WORD_STEP_FACTOR = 2.5f;
 
     boolean mIsInDraggingFinger;
     // true if this pointer is sliding from a modifier key and in the sliding key input mode,
@@ -1008,14 +1014,17 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                 }
             }
         } else if (code == KeyCode.DELETE) {
-            // Delete slider
-            int steps = (x - mStartX) / sPointerStep;
+            // Delete slider. Selecting whole words needs more travel per step, otherwise a small
+            // drag would swallow a whole sentence.
+            final int deleteStep = sv.mDeleteSwipeWords
+                    ? (int) (sPointerStep * DELETE_WORD_STEP_FACTOR) : sPointerStep;
+            int steps = (x - mStartX) / deleteStep;
             if (steps != 0) {
                 if (!mInHorizontalSwipe) {
                     sTimerProxy.cancelKeyTimersOf(this);
                     mInHorizontalSwipe = true;
                 }
-                mStartX += steps * sPointerStep;
+                mStartX += steps * deleteStep;
                 sListener.onMoveDeletePointer(steps);
             }
         }
@@ -1030,17 +1039,32 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         if (!mIsInTrackpad) {
             if (Math.abs(dX) < sPointerStep && Math.abs(dY) < sPointerStep) return;
             mIsInTrackpad = true;
+            mTrackpadLastLineDirection = 0;
             // the keyboard cannot be typed on while it acts as a trackpad
             mInHorizontalSwipe = true;
             sTimerProxy.cancelKeyTimersOf(this);
+            // the spacebar is not really being held any more, so let it sit at its resting size
+            if (mCurrentKey != null) {
+                sDrawingProxy.onKeyReleasedForTrackpad(mCurrentKey);
+            }
             sDrawingProxy.setTrackpadActive(true);
         }
-        // 0 makes a line take three times the travel of a character, 100 makes them equal
-        final int verticalStep = Math.max(1, (int) (sPointerStep
-                * (3f - 2f * (sv.mSpacebarTrackpadVerticalSensitivity / 100f))));
+        // A line is a far bigger jump than a character, so vertical travel is scaled right down:
+        // at 0 a line takes eight times the travel of a character, at 100 they are equal.
+        final float sensitivity = sv.mSpacebarTrackpadVerticalSensitivity / 100f;
+        int verticalStep = Math.max(1, (int) (sPointerStep * (8f - 7f * sensitivity)));
+        if (sv.mSpacebarTrackpadLineSnap && mTrackpadLastLineDirection != 0) {
+            // having just changed line, ask for extra travel in the same direction before
+            // changing again, which is what makes the cursor sit on a line rather than skate
+            // across several of them
+            verticalStep = (int) (verticalStep * TRACKPAD_LINE_SNAP_FACTOR);
+        }
         final int stepsX = dX / sPointerStep;
         final int stepsY = dY / verticalStep;
         if (stepsX == 0 && stepsY == 0) return;
+        if (stepsY != 0) {
+            mTrackpadLastLineDirection = Integer.signum(stepsY);
+        }
         mStartX += stepsX * sPointerStep;
         mStartY += stepsY * verticalStep;
         sListener.onTrackpadCursorMove(stepsX, stepsY);
@@ -1049,6 +1073,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private void endSpacebarTrackpad() {
         if (!mIsInTrackpad) return;
         mIsInTrackpad = false;
+        mTrackpadLastLineDirection = 0;
         sDrawingProxy.setTrackpadActive(false);
     }
 
@@ -1239,8 +1264,26 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             return;
         }
         final int code = key.getCode();
+        final SettingsValues settingsValues = Settings.getValues();
+        if (code == Constants.CODE_SPACE && settingsValues.mSpacebarTrackpad
+                && settingsValues.mSpacebarTrackpadLongPress
+                && settingsValues.mSpaceSwipeHorizontal == KeyboardActionListener.SwipeAction.MOVE_CURSOR) {
+            // hold to start driving the cursor, rather than to open the input method picker
+            mKeySwipeAllowed = true;
+            sInKeySwipe = true;
+            mIsInTrackpad = true;
+            mTrackpadLastLineDirection = 0;
+            mInHorizontalSwipe = true;
+            mStartX = mLastX;
+            mStartY = mLastY;
+            sDrawingProxy.onKeyReleasedForTrackpad(key);
+            sDrawingProxy.setTrackpadActive(true);
+            // just the tick that says the trackpad took over, not a key press
+            sListener.onCustomRequest(Constants.CODE_PERFORM_HAPTIC);
+            return;
+        }
         if (code == KeyCode.LANGUAGE_SWITCH
-                || (code == Constants.CODE_SPACE && key.getPopupKeys() == null && Settings.getValues().mSpaceForLangChange)
+                || (code == Constants.CODE_SPACE && key.getPopupKeys() == null && settingsValues.mSpaceForLangChange)
         ) {
             // Long pressing the space key invokes IME switcher dialog.
             if (sListener.onCustomRequest(Constants.CUSTOM_CODE_SHOW_INPUT_METHOD_PICKER)) {

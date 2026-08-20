@@ -205,10 +205,34 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         inputLogic.finishInput()
         val end = connection.expectedSelectionEnd
         val actualSteps = actualSteps(steps)
-        val start = connection.expectedSelectionStart + actualSteps
+        var start = connection.expectedSelectionStart + actualSteps
         if (start > end) return
+        if (settings.current.mDeleteSwipeWords && actualSteps < 0) {
+            start = snapSelectionStartToWord(start)
+        }
+        if (start == connection.expectedSelectionStart) return
         gestureMoveBackHaptics()
         connection.setSelection(start, end)
+    }
+
+    /**
+     * Pulls the start of the selection back to the beginning of the word it landed inside, so a
+     * delete swipe takes whole words rather than stopping part way through one.
+     */
+    private fun snapSelectionStartToWord(tentativeStart: Int): Int {
+        if (tentativeStart <= 0) return 0
+        val currentStart = connection.expectedSelectionStart
+        val travelled = currentStart - tentativeStart
+        if (travelled <= 0) return tentativeStart
+        val text = connection.getTextBeforeCursor(travelled + WORD_SNAP_LOOK_BEHIND, 0)
+            ?: return tentativeStart
+        var index = text.length - travelled
+        if (index <= 0) return tentativeStart
+        // step over any spaces that were landed on, then back to the start of the word before
+        // them, so one step takes exactly one word
+        while (index > 0 && Character.isWhitespace(text[index - 1])) index--
+        while (index > 0 && !Character.isWhitespace(text[index - 1])) index--
+        return currentStart - (text.length - index)
     }
 
     private fun actualSteps(steps: Int): Int {
@@ -456,6 +480,9 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     }
 
     companion object {
+        /** extra characters fetched so a word can be walked back past the swipe distance */
+        private const val WORD_SNAP_LOOK_BEHIND = 64
+
         private enum class MetaPressState {
             UNSET, // default state, not active
             SET, // enabled without onPressKey (e.g. in popup)

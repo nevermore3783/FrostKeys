@@ -118,6 +118,15 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_SPACEBAR_TRACKPAD = "spacebar_trackpad";
     public static final String PREF_SPACEBAR_TRACKPAD_HIDE_LABELS = "spacebar_trackpad_hide_labels";
     public static final String PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY = "spacebar_trackpad_vertical_sensitivity";
+    public static final String PREF_SPACEBAR_TRACKPAD_LINE_SNAP = "spacebar_trackpad_line_snap";
+    public static final String PREF_SPACEBAR_TRACKPAD_LONG_PRESS = "spacebar_trackpad_long_press";
+    public static final String PREF_SPACE_PRESS_SCALE = "space_press_scale";
+    public static final String PREF_SPACE_PRESS_LABEL_SCALE = "space_press_label_scale";
+    public static final String PREF_FLICK_REBOUND_STYLE = "flick_rebound_style";
+    public static final String PREF_FLICK_REBOUND_DURATION = "flick_rebound_duration";
+    public static final String PREF_DELETE_SWIPE_WORDS = "delete_swipe_words";
+    public static final String PREF_HIDE_PLACEHOLDER_SUGGESTIONS = "hide_placeholder_suggestions";
+    public static final String PREF_POPUP_KEYS_PANEL_OPACITY = "popup_keys_panel_opacity";
     public static final String PREF_AUTO_CORRECTION = "auto_correction";
     public static final String PREF_MORE_AUTO_CORRECTION = "more_auto_correction";
     public static final String PREF_AUTO_CORRECT_THRESHOLD = "auto_correct_threshold";

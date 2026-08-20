@@ -103,6 +103,31 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
             new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG);
     private final android.graphics.RectF mBackdropRect = new android.graphics.RectF();
     private final android.graphics.Path mBackdropClip = new android.graphics.Path();
+    /** the background instance we own a private copy of, so we never dim a shared drawable */
+    @Nullable
+    private android.graphics.drawable.Drawable mMutatedBackground;
+
+    /**
+     * Thins out the panel's own fill so the blur the keyboard window already puts behind itself
+     * shows through. Without this the panel stays an opaque slab and the captured backdrop below
+     * it is invisible, which reads as a flat colour with a faint edge rather than as glass.
+     */
+    private void applyPanelOpacity() {
+        final SettingsValues sv = Settings.getValues();
+        android.graphics.drawable.Drawable background = getBackground();
+        if (background == null || sv == null) {
+            return;
+        }
+        if (background != mMutatedBackground) {
+            // the theme hands the same drawable state to several views, so take a private copy
+            // before changing its alpha
+            background = background.mutate();
+            setBackground(background);
+            mMutatedBackground = background;
+        }
+        background.setAlpha(sv.mPopupKeysBlur
+                ? Math.round(sv.mPopupKeysPanelOpacity / 100f * 255f) : 255);
+    }
 
     @Override
     public void draw(@NonNull final android.graphics.Canvas canvas) {
@@ -253,6 +278,7 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
     private void showPopupKeysPanelInternal(final View parentView, final Controller controller,
             final int pointX, final int pointY) {
         mController = controller;
+        applyPanelOpacity();
         // grabbed once the panel has been placed, since only then is it known what it covers
         post(() -> {
             captureBackdrop();

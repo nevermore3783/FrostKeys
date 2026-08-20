@@ -66,6 +66,11 @@ public final class KeyPressAnimator {
         start(key, 0f, Settings.getValues().mKeyReleaseAnimDuration);
     }
 
+    /** Drops a key straight back to its resting look, without the release animation. */
+    public void reset(@NonNull final Key key) {
+        mStates.remove(key);
+    }
+
     public void clear() {
         mStates.clear();
         mHasRunningAnimation = false;
@@ -94,6 +99,7 @@ public final class KeyPressAnimator {
     public boolean isEnabled() {
         final SettingsValues sv = Settings.getValues();
         return sv != null && (sv.mKeyPressScale != 100 || sv.mKeyPressLabelScale != 100
+                || sv.mSpacePressScale != 100 || sv.mSpacePressLabelScale != 100
                 || sv.mKeyPressHighlight > 0);
     }
 
@@ -153,16 +159,21 @@ public final class KeyPressAnimator {
         }
     }
 
-    /** How much the key itself shrinks, 1 when the key keeps its size. */
-    public static float keyScale(final float progress) {
-        final int scale = Settings.getValues().mKeyPressScale;
+    /**
+     * How much the key itself shrinks, 1 when the key keeps its size. The spacebar has its own
+     * value, since shrinking it by the same share as a letter key moves its edges much further.
+     */
+    public static float keyScale(final float progress, final boolean isSpaceBar) {
+        final SettingsValues sv = Settings.getValues();
+        final int scale = isSpaceBar ? sv.mSpacePressScale : sv.mKeyPressScale;
         if (scale == 100 || progress <= 0f) return 1f;
         return 1f + (scale / 100f - 1f) * progress;
     }
 
     /** How much the label, icon and hint shrink, 1 when they keep their size. */
-    public static float labelScale(final float progress) {
-        final int scale = Settings.getValues().mKeyPressLabelScale;
+    public static float labelScale(final float progress, final boolean isSpaceBar) {
+        final SettingsValues sv = Settings.getValues();
+        final int scale = isSpaceBar ? sv.mSpacePressLabelScale : sv.mKeyPressLabelScale;
         if (scale == 100 || progress <= 0f) return 1f;
         return 1f + (scale / 100f - 1f) * progress;
     }

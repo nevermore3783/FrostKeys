@@ -82,6 +82,7 @@ fun TextCorrectionScreen(
             Settings.PREF_ALWAYS_SHOW_SUGGESTIONS_EXCEPT_WEB_TEXT else null,
         if (suggestionsEnabled) Settings.PREF_CENTER_SUGGESTION_TEXT_TO_ENTER else null,
         if (suggestionsEnabled) Settings.PREF_USE_5_WORD_SUGGESTION_CHIPS else null,
+        if (suggestionsEnabled) Settings.PREF_HIDE_PLACEHOLDER_SUGGESTIONS else null,
         if (suggestionsEnabled && !prefs.getBoolean(Settings.PREF_USE_5_WORD_SUGGESTION_CHIPS, Defaults.PREF_USE_5_WORD_SUGGESTION_CHIPS))
             Settings.PREF_HIDE_MORE_SUGGESTIONS_HINT else null,
         if (suggestionsEnabled || autocorrectEnabled) Settings.PREF_SUGGEST_EMOJIS else null,
@@ -231,6 +232,11 @@ fun createCorrectionSettings(context: Context) = listOf(
         R.string.use_5_word_suggestion_chips, R.string.use_5_word_suggestion_chips_summary
     ) {
         SwitchPreference(it, Defaults.PREF_USE_5_WORD_SUGGESTION_CHIPS)
+    },
+    Setting(context, Settings.PREF_HIDE_PLACEHOLDER_SUGGESTIONS,
+        R.string.hide_placeholder_suggestions, R.string.hide_placeholder_suggestions_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_HIDE_PLACEHOLDER_SUGGESTIONS)
     },
     Setting(context, Settings.PREF_HIDE_MORE_SUGGESTIONS_HINT,
         R.string.hide_more_suggestions_hint, R.string.hide_more_suggestions_hint_summary

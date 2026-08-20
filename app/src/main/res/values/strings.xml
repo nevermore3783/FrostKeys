@@ -16,6 +16,36 @@
     <string name="android_spell_checker_settings">FrostKeys Spell Checker Settings</string>
     <!-- Option to provide vibrate/haptic feedback on keypress -->
     <string name="vibrate_on_keypress">Vibrate on keypress</string>
+    <!-- Shape and length of the flick rebound -->
+    <string name="flick_rebound_style">Rebound shape</string>
+    <string name="flick_rebound_style_smooth">Smooth</string>
+    <string name="flick_rebound_style_ease">Ease back</string>
+    <string name="flick_rebound_style_springy">Springy</string>
+    <string name="flick_rebound_duration">Rebound length</string>
+
+    <!-- Spacebar trackpad extras -->
+    <string name="spacebar_trackpad_line_snap">Stick to lines</string>
+    <string name="spacebar_trackpad_line_snap_summary">Asks for extra travel before changing line again, so the cursor settles on a line instead of skating across several</string>
+    <string name="spacebar_trackpad_long_press">Hold spacebar for trackpad</string>
+    <string name="spacebar_trackpad_long_press_summary">Holding the spacebar starts moving the cursor instead of opening the input method picker</string>
+
+    <!-- Delete swipe by words -->
+    <string name="delete_swipe_words">Delete swipe selects words</string>
+    <string name="delete_swipe_words_summary">Sliding on the delete key takes whole words at a time instead of single characters</string>
+
+    <!-- Spacebar specific press animation -->
+    <string name="space_press_scale">Spacebar shrink on press</string>
+    <string name="space_press_scale_summary">Kept separate from the other keys, since the same share moves a wide key much further</string>
+    <string name="space_press_label_scale">Spacebar label shrink on press</string>
+
+    <!-- Popup panel see through -->
+    <string name="popup_keys_panel_opacity">Popup panel opacity</string>
+    <string name="popup_keys_panel_opacity_summary">How solid the symbol popup is. Lower lets the blur behind the keyboard show through it.</string>
+
+    <!-- Suppress placeholder predictions -->
+    <string name="hide_placeholder_suggestions">Hide prediction placeholders</string>
+    <string name="hide_placeholder_suggestions_summary">Skips the guessed next words that appear for a moment between a typed word and an empty field, so the strip goes straight back to the toolbar</string>
+
     <!-- Title of the setting springing a key back after a flick -->
     <string name="flick_rebound">Flick rebound</string>
     <string name="flick_rebound_summary">Springs the key back after a flick enters its symbol</string>

@@ -165,6 +165,8 @@ fun SearchSettingsScreen(
     )
 }
 
+private const val SEARCH_FIELD_KEY = "search_field"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T: Any?> SearchScreen(
@@ -377,7 +379,9 @@ fun <T: Any?> SearchScreen(
                         }
                     }
                 } else {
-                    val items = filteredItems(searchText.text)
+                    // recomputed only when the query really changes, so a recomposition does not
+                    // hand the lazy list a brand new list of items on every frame
+                    val items = remember(searchText.text) { filteredItems(searchText.text) }
                     Scaffold(
                         modifier = contentModifier,
                         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)
@@ -399,7 +403,10 @@ fun <T: Any?> SearchScreen(
                                     bottom = innerPadding2.calculateBottomPadding()
                                 )
                             ) {
-                                item {
+                                // keyed so the field keeps its slot while the results below it
+                                // change, otherwise it is recreated, loses focus, and the
+                                // keyboard is dismissed mid search
+                                item(key = SEARCH_FIELD_KEY) {
                                     val searchState = LocalSearchState.current
                                     if (searchState != null) {
                                         searchState.searchField()
