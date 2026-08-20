@@ -125,12 +125,20 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
             setBackground(background);
             mMutatedBackground = background;
         }
-        background.setAlpha(sv.mPopupKeysBlur
-                ? Math.round(sv.mPopupKeysPanelOpacity / 100f * 255f) : 255);
+        final int alpha = sv.mPopupKeysBlur
+                ? Math.round(sv.mPopupKeysPanelOpacity / 100f * 255f) : 255;
+        if (background.getAlpha() != alpha) {
+            // guarded, since setting it unconditionally invalidates the drawable every frame
+            background.setAlpha(alpha);
+        }
     }
 
     @Override
     public void draw(@NonNull final android.graphics.Canvas canvas) {
+        // re-checked here rather than only when the panel opens, because the theme can hand the
+        // view a freshly coloured background after that point, and thinning the previous one
+        // would leave the new one at full strength in whatever colour it defaulted to
+        applyPanelOpacity();
         drawBackdrop(canvas);
         super.draw(canvas);
     }

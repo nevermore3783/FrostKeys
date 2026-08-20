@@ -125,7 +125,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_FLICK_REBOUND_STYLE = "flick_rebound_style";
     public static final String PREF_FLICK_REBOUND_DURATION = "flick_rebound_duration";
     public static final String PREF_DELETE_SWIPE_WORDS = "delete_swipe_words";
-    public static final String PREF_HIDE_PLACEHOLDER_SUGGESTIONS = "hide_placeholder_suggestions";
+    public static final String PREF_STRIP_SETTLE_DELAY = "strip_settle_delay";
     public static final String PREF_POPUP_KEYS_PANEL_OPACITY = "popup_keys_panel_opacity";
     public static final String PREF_AUTO_CORRECTION = "auto_correction";
     public static final String PREF_MORE_AUTO_CORRECTION = "more_auto_correction";

@@ -83,7 +83,7 @@ public class SettingsValues {
     public final int mFlickReboundStyle;
     public final int mFlickReboundDuration;
     public final boolean mDeleteSwipeWords;
-    public final boolean mHidePlaceholderSuggestions;
+    public final int mStripSettleDelay;
     public final int mPopupKeysPanelOpacity;
     public final boolean mSpellcheckSuggest;
     public final boolean mVibrateOn;
@@ -244,7 +244,7 @@ public class SettingsValues {
         mFlickReboundStyle = prefs.getInt(Settings.PREF_FLICK_REBOUND_STYLE, Defaults.PREF_FLICK_REBOUND_STYLE);
         mFlickReboundDuration = prefs.getInt(Settings.PREF_FLICK_REBOUND_DURATION, Defaults.PREF_FLICK_REBOUND_DURATION);
         mDeleteSwipeWords = prefs.getBoolean(Settings.PREF_DELETE_SWIPE_WORDS, Defaults.PREF_DELETE_SWIPE_WORDS);
-        mHidePlaceholderSuggestions = prefs.getBoolean(Settings.PREF_HIDE_PLACEHOLDER_SUGGESTIONS, Defaults.PREF_HIDE_PLACEHOLDER_SUGGESTIONS);
+        mStripSettleDelay = prefs.getInt(Settings.PREF_STRIP_SETTLE_DELAY, Defaults.PREF_STRIP_SETTLE_DELAY);
         mPopupKeysPanelOpacity = prefs.getInt(Settings.PREF_POPUP_KEYS_PANEL_OPACITY, Defaults.PREF_POPUP_KEYS_PANEL_OPACITY);
         mSpellcheckSuggest = prefs.getBoolean(Settings.PREF_SPELLCHECK_SUGGEST, Defaults.PREF_SPELLCHECK_SUGGEST);
         mVibrateOn = Settings.readVibrationEnabled(prefs);

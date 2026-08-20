@@ -47,6 +47,9 @@ import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import helium314.keyboard.latin.common.LocaleUtils.constructLocale
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.zip.ZipOutputStream
 import androidx.core.content.edit
 import helium314.keyboard.latin.checkVersionUpgrade
@@ -366,5 +369,188 @@ fun restoreSilently(ctx: Context, inputStream: InputStream): Boolean {
     } catch (t: Throwable) {
         Log.w("BackupRestorePreference", "error during silent restore", t)
         return false
+    }
+}
+
+/**
+ * Backs up only what the keyboard has learned about you: the typing history behind
+ * "Personalized suggestions", any user dictionaries, and the words in the device's personal
+ * dictionary. Separate from the full backup so a rebuild can keep the keyboard as clever as it
+ * was without carrying every setting along with it.
+ */
+@Composable
+fun LearnedDataBackupPreference(setting: Setting) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    val ctx = LocalContext.current
+    var error: String? by rememberSaveable { mutableStateOf(null) }
+    val backupLauncher = learnedDataBackupLauncher { error = it }
+    val restoreLauncher = learnedDataRestoreLauncher { error = it }
+    Preference(name = setting.title, onClick = { showDialog = true })
+    if (showDialog) {
+        ConfirmationDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.learned_data_backup_title)) },
+            content = { Text(stringResource(R.string.learned_data_backup_message)) },
+            confirmButtonText = stringResource(R.string.button_backup),
+            neutralButtonText = stringResource(R.string.button_restore),
+            onNeutral = {
+                showDialog = false
+                restoreLauncher.launch(
+                    Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("application/zip")
+                )
+            },
+            onConfirmed = {
+                val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    .format(Calendar.getInstance().time)
+                backupLauncher.launch(
+                    Intent(Intent.ACTION_CREATE_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .putExtra(
+                            Intent.EXTRA_TITLE,
+                            ctx.getString(R.string.english_ime_name).replace(" ", "_")
+                                    + "_learned_$date.zip"
+                        )
+                        .setType("application/zip")
+                )
+            }
+        )
+    }
+    if (error != null) {
+        InfoDialog(
+            if (error!!.startsWith("b")) stringResource(R.string.backup_error, error!!.drop(1))
+            else stringResource(R.string.restore_error, error!!.drop(1))
+        ) { error = null }
+    }
+}
+
+/** the learned typing history and the dictionaries built from it, but no settings */
+private val learnedDataFilePatterns by lazy { listOf(
+    "dicts${File.separator}.*${File.separator}.*user\\.dict".toRegex(),
+    "UserHistoryDictionary.*${File.separator}UserHistoryDictionary.*\\.(body|header)".toRegex(),
+) }
+
+private const val PERSONAL_DICTIONARY_FILE_NAME = "personal_dictionary.json"
+
+@Composable
+private fun learnedDataBackupLauncher(onError: (String) -> Unit): ManagedActivityResultLauncher<Intent, ActivityResult> {
+    val ctx = LocalContext.current
+    return filePicker { uri ->
+    val wait = CountDownLatch(1)
+    ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
+        try {
+            ctx.getActivity()?.contentResolver?.openOutputStream(uri)?.use { os ->
+                val zipStream = ZipOutputStream(os)
+                writeLearnedFiles(ctx.filesDir, "", zipStream)
+                writeLearnedFiles(DeviceProtectedUtils.getFilesDir(ctx), "unprotected", zipStream)
+                zipStream.putNextEntry(ZipEntry(PERSONAL_DICTIONARY_FILE_NAME))
+                zipStream.write(readPersonalDictionary(ctx).toString().toByteArray())
+                zipStream.closeEntry()
+                zipStream.close()
+            }
+        } catch (t: Throwable) {
+            onError("b" + t.message)
+            Log.w("LearnedDataBackup", "error during learned data backup", t)
+        } finally {
+            wait.countDown()
+        }
+    }
+    wait.await()
+    }
+}
+
+private fun writeLearnedFiles(dir: File?, prefix: String, zipStream: ZipOutputStream) {
+    if (dir == null || !dir.exists()) return
+    val base = dir.path + File.separator
+    dir.walk().forEach { file ->
+        val path = file.path.replace(base, "")
+        if (!file.isFile || learnedDataFilePatterns.none { path.matches(it) }) return@forEach
+        val entry = if (prefix.isEmpty()) path else prefix + File.separator + path
+        zipStream.putNextEntry(ZipEntry(entry))
+        FileInputStream(file).buffered().use { it.copyTo(zipStream, 1024) }
+        zipStream.closeEntry()
+    }
+}
+
+@Composable
+private fun learnedDataRestoreLauncher(onError: (String) -> Unit): ManagedActivityResultLauncher<Intent, ActivityResult> {
+    val ctx = LocalContext.current
+    return filePicker { uri ->
+    val wait = CountDownLatch(1)
+    ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
+        try {
+            ctx.getActivity()?.contentResolver?.openInputStream(uri)?.use { inputStream ->
+                ZipInputStream(inputStream).use { zip ->
+                    var entry: ZipEntry? = zip.nextEntry
+                    val filesDir = ctx.filesDir ?: return@use
+                    val protectedDir = DeviceProtectedUtils.getFilesDir(ctx) ?: return@use
+                    while (entry != null) {
+                        val name = entry.name
+                        if (name == PERSONAL_DICTIONARY_FILE_NAME) {
+                            writePersonalDictionary(ctx, zip.readBytes().decodeToString())
+                        } else if (name.startsWith("unprotected" + File.separator)) {
+                            restoreEntryToDir(zip, protectedDir, name.substringAfter(File.separator))
+                        } else {
+                            restoreEntryToDir(zip, filesDir, name)
+                        }
+                        zip.closeEntry()
+                        entry = zip.nextEntry
+                    }
+                }
+            }
+        } catch (t: Throwable) {
+            onError("r" + t.message)
+            Log.w("LearnedDataBackup", "error during learned data restore", t)
+        } finally {
+            wait.countDown()
+        }
+    }
+    wait.await()
+    }
+}
+
+/** the words the device stores for "Add words to personal dictionary" */
+private fun readPersonalDictionary(ctx: Context): JSONArray {
+    val words = JSONArray()
+    val projection = arrayOf(
+        android.provider.UserDictionary.Words.WORD,
+        android.provider.UserDictionary.Words.FREQUENCY,
+        android.provider.UserDictionary.Words.LOCALE,
+        android.provider.UserDictionary.Words.SHORTCUT
+    )
+    ctx.contentResolver.query(
+        android.provider.UserDictionary.Words.CONTENT_URI, projection, null, null, null
+    )?.use { cursor ->
+        val word = cursor.getColumnIndex(android.provider.UserDictionary.Words.WORD)
+        val frequency = cursor.getColumnIndex(android.provider.UserDictionary.Words.FREQUENCY)
+        val locale = cursor.getColumnIndex(android.provider.UserDictionary.Words.LOCALE)
+        val shortcut = cursor.getColumnIndex(android.provider.UserDictionary.Words.SHORTCUT)
+        while (cursor.moveToNext()) {
+            if (word < 0) continue
+            words.put(JSONObject().apply {
+                put("word", cursor.getString(word) ?: return@apply)
+                if (frequency >= 0) put("frequency", cursor.getInt(frequency))
+                if (locale >= 0) cursor.getString(locale)?.let { put("locale", it) }
+                if (shortcut >= 0) cursor.getString(shortcut)?.let { put("shortcut", it) }
+            })
+        }
+    }
+    return words
+}
+
+private fun writePersonalDictionary(ctx: Context, json: String) {
+    val words = JSONArray(json)
+    for (i in 0 until words.length()) {
+        val entry = words.optJSONObject(i) ?: continue
+        val word = entry.optString("word").takeIf { it.isNotEmpty() } ?: continue
+        val localeTag = entry.optString("locale").takeIf { it.isNotEmpty() }
+        val shortcut = entry.optString("shortcut").takeIf { it.isNotEmpty() }
+        val frequency = entry.optInt("frequency", 250)
+        // addWord replaces an entry that is already there, so restoring twice is harmless
+        android.provider.UserDictionary.Words.addWord(
+            ctx, word, frequency, shortcut,
+            localeTag?.constructLocale()
+        )
     }
 }

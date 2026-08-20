@@ -80,6 +80,7 @@ object SettingsWithoutKey {
     const val TELEGRAM = "telegram"
     const val SAVE_LOG = "save_log"
     const val BACKUP_RESTORE = "backup_restore"
+    const val LEARNED_DATA_BACKUP = "learned_data_backup"
     const val DEBUG_SETTINGS = "screen_debug"
     const val LOAD_GESTURE_LIB = "load_gesture_library"
     const val BACKGROUND_IMAGE = "background_image"

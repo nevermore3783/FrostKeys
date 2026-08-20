@@ -207,12 +207,30 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         val actualSteps = actualSteps(steps)
         var start = connection.expectedSelectionStart + actualSteps
         if (start > end) return
-        if (settings.current.mDeleteSwipeWords && actualSteps < 0) {
-            start = snapSelectionStartToWord(start)
+        if (settings.current.mDeleteSwipeWords && actualSteps != 0) {
+            start = if (actualSteps < 0) snapSelectionStartToWord(start)
+                    else unsnapSelectionStartToWord(start, end)
         }
         if (start == connection.expectedSelectionStart) return
         gestureMoveBackHaptics()
         connection.setSelection(start, end)
+    }
+
+    /**
+     * Pushes the start of the selection forward to the beginning of the next selected word, so
+     * swiping back gives words up whole instead of a character at a time.
+     */
+    private fun unsnapSelectionStartToWord(tentativeStart: Int, end: Int): Int {
+        if (tentativeStart >= end) return end
+        val selected = connection.getSelectedText(0) ?: return tentativeStart
+        val currentStart = connection.expectedSelectionStart
+        var index = tentativeStart - currentStart
+        if (index <= 0 || index >= selected.length) return tentativeStart
+        // walk over the rest of the word the release landed in, then over the spaces after it,
+        // leaving the selection starting on the next word
+        while (index < selected.length && !Character.isWhitespace(selected[index])) index++
+        while (index < selected.length && Character.isWhitespace(selected[index])) index++
+        return (currentStart + index).coerceAtMost(end)
     }
 
     /**

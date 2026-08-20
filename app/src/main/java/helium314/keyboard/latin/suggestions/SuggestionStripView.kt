@@ -164,6 +164,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
      */
     private val fadeTargets = HashMap<View, Boolean>()
 
+    /** which of the three containers sharing the strip should be on screen */
+    private data class ContainerState(val strip: Boolean, val chips: Boolean, val pinned: Boolean)
+
+    private var appliedContainers: ContainerState? = null
+    private var pendingContainers: ContainerState? = null
+    private val containerSwapRunnable = Runnable { applyPendingContainerVisibility() }
+
     private val moreSuggestionsContainer: View
     private val wordViews = ArrayList<TextView>()
     private val debugInfoViews = ArrayList<TextView>()
@@ -682,6 +689,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     override fun onDetachedFromWindow() {
+        removeCallbacks(containerSwapRunnable)
         super.onDetachedFromWindow()
         composeLifecycleOwner?.stop()
         dismissMoreSuggestionsPanel()
@@ -918,11 +926,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     private fun shouldShowSuggestionContent(words: SuggestedWords = suggestedWords): Boolean {
-        if (Settings.getValues().mHidePlaceholderSuggestions && words.isPrediction) {
-            // predictions are what briefly appear between a typed word and an empty field, and
-            // showing them turns one transition into two
-            return false
-        }
         return !words.isEmpty && !words.isPunctuationSuggestions && words.getWordCountToShow() > 0
     }
 
@@ -962,17 +965,41 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     /**
      * Swaps the three containers that share the strip.
      *
-     * They sit on top of each other, so fading one in while the other is still fading out shows
-     * the toolbar keys ghosted over the suggestions. The outgoing one therefore goes first and
-     * the incoming one waits for it, which keeps the whole thing within the configured length
-     * while never showing two of them at once.
+     * Between two keystrokes the suggestions briefly go empty, which on its own would hand the
+     * strip to the toolbar keys and take it straight back, once per character typed. So losing
+     * the suggestions is held back for a moment to see whether they return, and only a loss that
+     * sticks actually swaps the strip. Gaining suggestions is never a blip and happens at once,
+     * which keeps typing responsive.
      */
     private fun applyContainerVisibility(strip: Boolean, chips: Boolean, pinned: Boolean) {
+        val target = ContainerState(strip, chips, pinned)
+        removeCallbacks(containerSwapRunnable)
+        if (target == appliedContainers) {
+            pendingContainers = null
+            return
+        }
+        pendingContainers = target
+        val sv = Settings.getValues()
+        val settle = if (sv.mStripCrossfade) sv.mStripSettleDelay.toLong() else 0L
+        val hadSuggestions = appliedContainers?.let { it.strip || it.chips } == true
+        if (settle > 0L && hadSuggestions && !strip && !chips) {
+            postDelayed(containerSwapRunnable, settle)
+        } else {
+            applyPendingContainerVisibility()
+        }
+    }
+
+    private fun applyPendingContainerVisibility() {
+        val target = pendingContainers ?: return
+        pendingContainers = null
+        appliedContainers = target
         val targets = listOf(
-            suggestionsStrip to strip,
-            suggestionsChipScroll to chips,
-            pinnedKeys to pinned
+            suggestionsStrip to target.strip,
+            suggestionsChipScroll to target.chips,
+            pinnedKeys to target.pinned
         )
+        // they sit on top of each other, so whatever is leaving goes first and the incoming one
+        // waits for it, rather than the two overlapping at partial opacity
         val anythingLeaving = targets.any { (view, visible) -> !visible && view.isVisible }
         targets.forEach { (view, visible) ->
             view.fadeVisibility(visible, delayIn = anythingLeaving)

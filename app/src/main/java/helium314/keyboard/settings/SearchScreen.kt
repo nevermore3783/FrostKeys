@@ -161,11 +161,10 @@ fun SearchSettingsScreen(
             }
         },
         filteredItems = { SettingsActivity.settingsContainer.filter(it) },
-        itemContent = { it.Preference() }
+        itemContent = { it.Preference() },
+        itemKey = { it.key }
     )
 }
-
-private const val SEARCH_FIELD_KEY = "search_field"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -397,28 +396,36 @@ fun <T: Any?> SearchScreen(
                                     } else Modifier
                                 )
                         ) {
-                            LazyColumn(
-                                contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                    top = innerPadding.calculateTopPadding(),
-                                    bottom = innerPadding2.calculateBottomPadding()
+                            Column(
+                                modifier = Modifier.padding(
+                                    top = innerPadding.calculateTopPadding()
                                 )
                             ) {
-                                // keyed so the field keeps its slot while the results below it
-                                // change, otherwise it is recreated, loses focus, and the
-                                // keyboard is dismissed mid search
-                                item(key = SEARCH_FIELD_KEY) {
-                                    val searchState = LocalSearchState.current
-                                    if (searchState != null) {
-                                        searchState.searchField()
-                                    }
+                                // The field sits outside the lazy list on purpose. Inside it, the
+                                // results changing on the first typed character can take the item
+                                // holding the field with them, which drops focus and pulls the
+                                // keyboard down.
+                                val searchState = LocalSearchState.current
+                                if (searchState != null) {
+                                    searchState.searchField()
                                 }
-                                if (itemKey == null) {
-                                    items(items) {
-                                        itemContent(it)
-                                    }
-                                } else {
-                                    items(items, key = itemKey) {
-                                        itemContent(it)
+                                LazyColumn(
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                        bottom = innerPadding2.calculateBottomPadding()
+                                    )
+                                ) {
+                                    if (itemKey == null) {
+                                        items(items) {
+                                            itemContent(it)
+                                        }
+                                    } else {
+                                        // keys let the lazy layout reuse nodes instead of
+                                        // removing them, which is what the prefetcher trips over
+                                        // when the results change underneath it
+                                        items(items, key = itemKey) {
+                                            itemContent(it)
+                                        }
                                     }
                                 }
                             }

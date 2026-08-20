@@ -88,6 +88,8 @@ fun AppearanceScreen(
         Settings.PREF_STRIP_CROSSFADE,
         if (prefs.getBoolean(Settings.PREF_STRIP_CROSSFADE, Defaults.PREF_STRIP_CROSSFADE))
             Settings.PREF_STRIP_CROSSFADE_DURATION else null,
+        if (prefs.getBoolean(Settings.PREF_STRIP_CROSSFADE, Defaults.PREF_STRIP_CROSSFADE))
+            Settings.PREF_STRIP_SETTLE_DELAY else null,
         Settings.PREF_POPUP_KEYS_BLUR,
         if (prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR))
             Settings.PREF_POPUP_KEYS_BLUR_RADIUS else null,
@@ -494,6 +496,17 @@ fun createAppearanceSettings(context: Context) = listOf(
             key = setting.key,
             default = Defaults.PREF_STRIP_CROSSFADE_DURATION,
             range = 40f..400f,
+            description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
+        )
+    },
+    Setting(context, Settings.PREF_STRIP_SETTLE_DELAY, R.string.strip_settle_delay,
+        R.string.strip_settle_delay_summary
+    ) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_STRIP_SETTLE_DELAY,
+            range = 0f..600f,
             description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
         )
     },

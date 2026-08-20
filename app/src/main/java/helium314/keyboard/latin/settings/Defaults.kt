@@ -84,7 +84,7 @@ object Defaults {
     const val PREF_FLICK_REBOUND_STYLE = 0
     const val PREF_FLICK_REBOUND_DURATION = 260
     const val PREF_DELETE_SWIPE_WORDS = false
-    const val PREF_HIDE_PLACEHOLDER_SUGGESTIONS = false
+    const val PREF_STRIP_SETTLE_DELAY = 180
     const val PREF_POPUP_KEYS_PANEL_OPACITY = 65
 
     @JvmField

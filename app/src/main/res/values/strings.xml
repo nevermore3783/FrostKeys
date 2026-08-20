@@ -42,9 +42,13 @@
     <string name="popup_keys_panel_opacity">Popup panel opacity</string>
     <string name="popup_keys_panel_opacity_summary">How solid the symbol popup is. Lower lets the blur behind the keyboard show through it.</string>
 
-    <!-- Suppress placeholder predictions -->
-    <string name="hide_placeholder_suggestions">Hide prediction placeholders</string>
-    <string name="hide_placeholder_suggestions_summary">Skips the guessed next words that appear for a moment between a typed word and an empty field, so the strip goes straight back to the toolbar</string>
+    <!-- Backup of just the data the keyboard learned from your typing -->
+    <string name="learned_data_backup_title">Back up learned words</string>
+    <string name="learned_data_backup_message">Saves what the keyboard has learned from your typing, your user dictionaries, and the words in the device personal dictionary, without any of your settings. Restore it after reinstalling so suggestions and autocorrect stay as good as they were.</string>
+
+    <!-- How long the strip waits before handing itself back to the toolbar -->
+    <string name="strip_settle_delay">Wait before showing toolbar</string>
+    <string name="strip_settle_delay_summary">The suggestions go empty for a moment between keystrokes. This is how long the strip waits for them to come back before swapping to the toolbar keys, which is what stops it flashing on every character.</string>
 
     <!-- Title of the setting springing a key back after a flick -->
     <string name="flick_rebound">Flick rebound</string>
