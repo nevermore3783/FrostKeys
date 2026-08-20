@@ -157,6 +157,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         fun onSwipeDownOnToolbar()
     }
 
+    /**
+     * What each of the swapping containers is currently animating towards. Declared up here
+     * because the constructor lays the strip out, and properties only exist from the point they
+     * are declared onwards.
+     */
+    private val fadeTargets = HashMap<View, Boolean>()
+
     private val moreSuggestionsContainer: View
     private val wordViews = ArrayList<TextView>()
     private val debugInfoViews = ArrayList<TextView>()
@@ -951,9 +958,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         pinnedKeys.fadeVisibility(showSuggestions && allowPinnedKeys && !showSuggestionContent && hasPinnedKeys)
     }
 
-    /** what each of the swapping containers is currently animating towards */
-    private val fadeTargets = HashMap<View, Boolean>()
-
     /**
      * Crossfades a container in or out instead of snapping it, which is what turns the swap
      * between the toolbar keys and the suggestions into a transition rather than a jump.
@@ -963,7 +967,9 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     private fun View.fadeVisibility(visible: Boolean) {
         val sv = Settings.getValues()
         val duration = if (sv.mStripCrossfade) sv.mStripCrossfadeDuration.toLong() else 0L
-        if (duration <= 0L) {
+        // the strip is laid out once while it is still being constructed, and there is nothing
+        // to transition from at that point
+        if (duration <= 0L || !isAttachedToWindow) {
             fadeTargets.remove(this)
             animate().cancel()
             alpha = 1f
