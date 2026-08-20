@@ -186,6 +186,11 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         else -> false
     }
 
+    override fun onTrackpadCursorMove(stepsX: Int, stepsY: Int) {
+        if (stepsY != 0) onMoveCursorVertically(stepsY)
+        if (stepsX != 0) onMoveCursorHorizontally(stepsX)
+    }
+
     override fun onEndSpaceSwipe(){
         initialSubtype = null
         subtypeSwitchCount = 0

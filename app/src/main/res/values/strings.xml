@@ -16,6 +16,45 @@
     <string name="android_spell_checker_settings">FrostKeys Spell Checker Settings</string>
     <!-- Option to provide vibrate/haptic feedback on keypress -->
     <string name="vibrate_on_keypress">Vibrate on keypress</string>
+    <!-- Title of the setting springing a key back after a flick -->
+    <string name="flick_rebound">Flick rebound</string>
+    <string name="flick_rebound_summary">Springs the key back after a flick enters its symbol</string>
+    <string name="flick_rebound_strength">Rebound strength</string>
+
+    <!-- Titles of the spacebar trackpad settings -->
+    <string name="spacebar_trackpad">Spacebar cursor trackpad</string>
+    <string name="spacebar_trackpad_summary">Slide on the spacebar to move the cursor in any direction, up and down as well as left and right. Needs the horizontal spacebar swipe set to move the cursor.</string>
+    <string name="spacebar_trackpad_hide_labels">Fade keys while moving</string>
+    <string name="spacebar_trackpad_hide_labels_summary">Fades the key labels out while the keyboard is acting as a trackpad</string>
+    <string name="spacebar_trackpad_vertical_sensitivity">Vertical sensitivity</string>
+
+    <!-- Titles of the keypress animation settings -->
+    <string name="key_press_scale">Key shrink on press</string>
+    <string name="key_press_scale_summary">How far the whole key shrinks while it is held</string>
+    <string name="key_press_scale_off">Off</string>
+    <string name="key_press_label_scale">Label shrink on press</string>
+    <string name="key_press_label_scale_summary">How far the letter, number or symbol on the key shrinks while it is held</string>
+    <string name="key_press_highlight">Press brightness</string>
+    <string name="key_press_highlight_summary">Lifts the key out further while it is held, on top of the theme\'s own pressed colour</string>
+    <string name="key_press_highlight_mode">Press brightness direction</string>
+    <string name="key_press_highlight_auto">Follow theme</string>
+    <string name="key_press_highlight_lighten">Lighten</string>
+    <string name="key_press_highlight_darken">Darken</string>
+    <string name="key_press_anim_duration">Press animation length</string>
+    <string name="key_release_anim_duration">Release animation length</string>
+    <string name="key_press_easing">Animation easing</string>
+    <string name="key_press_easing_linear">Even</string>
+    <string name="key_press_easing_smooth">Smooth</string>
+    <string name="key_press_easing_spring">Springy</string>
+
+    <!-- Titles of the suggestion strip and popup animation settings -->
+    <string name="strip_crossfade">Fade suggestion strip changes</string>
+    <string name="strip_crossfade_summary">Crossfades between the toolbar keys and the suggestions instead of swapping them instantly</string>
+    <string name="strip_crossfade_duration">Fade length</string>
+    <string name="popup_keys_blur">Blur behind symbol popup</string>
+    <string name="popup_keys_blur_summary">Frosts the keyboard behind the symbol list that opens on a long press, instead of showing a flat translucent panel</string>
+    <string name="popup_keys_blur_radius">Popup blur strength</string>
+
     <!-- Title of the setting for entering a key's symbol by flicking down on it -->
     <string name="flick_symbol_keys">Flick keys to enter symbols</string>
     <!-- Summary of the setting for entering a key's symbol by flicking down on it -->

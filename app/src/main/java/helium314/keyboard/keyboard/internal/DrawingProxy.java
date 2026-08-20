@@ -73,4 +73,13 @@ public interface DrawingProxy {
      * @param progress 0 when the flick just started, 1 once it would be entered on release.
      */
     void showFlickPreview(@Nullable Key key, @Nullable String flickLabel, float progress);
+
+    /**
+     * Let the keyboard know it is being used as a trackpad for the cursor, so it can fade its
+     * labels out while none of the keys can be typed on.
+     */
+    void setTrackpadActive(boolean active);
+
+    /** Play the spring-back of a key whose symbol was just entered by a flick. */
+    void startFlickRebound(@NonNull Key key);
 }

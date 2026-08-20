@@ -109,6 +109,12 @@ public interface KeyboardActionListener {
      */
     boolean onHorizontalSpaceSwipe(int steps);
     boolean onVerticalSpaceSwipe(int steps);
+    /**
+     * Moves the cursor in both directions at once, for the spacebar trackpad. Unlike the two
+     * calls above this does not consult the per-axis swipe settings, since in trackpad mode both
+     * axes always move the cursor.
+     */
+    void onTrackpadCursorMove(int stepsX, int stepsY);
     void onEndSpaceSwipe();
     boolean toggleNumpad(boolean withSliding, boolean forceReturnToAlpha);
 
@@ -151,6 +157,8 @@ public interface KeyboardActionListener {
         public boolean onCustomRequest(int requestCode) {
             return false;
         }
+        @Override
+        public void onTrackpadCursorMove(int stepsX, int stepsY) {}
         @Override
         public boolean onHorizontalSpaceSwipe(int steps) {
             return false;

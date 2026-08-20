@@ -70,6 +70,16 @@ fun PreferencesScreen(
         Settings.PREF_SHOW_TLD_POPUP_KEYS,
         Settings.PREF_POPUP_ON,
         Settings.PREF_FLICK_SYMBOL_KEYS,
+        if (prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS))
+            Settings.PREF_FLICK_REBOUND else null,
+        if (prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS)
+                && prefs.getBoolean(Settings.PREF_FLICK_REBOUND, Defaults.PREF_FLICK_REBOUND))
+            Settings.PREF_FLICK_REBOUND_STRENGTH else null,
+        Settings.PREF_SPACEBAR_TRACKPAD,
+        if (prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD))
+            Settings.PREF_SPACEBAR_TRACKPAD_HIDE_LABELS else null,
+        if (prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD))
+            Settings.PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY else null,
         if (AudioAndHapticFeedbackManager.getInstance().hasVibrator())
             Settings.PREF_VIBRATE_ON else null,
         if (prefs.getBoolean(Settings.PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON))
@@ -137,6 +147,41 @@ fun createPreferencesSettings(context: Context) = listOf(
         R.string.flick_symbol_keys_summary
     ) {
         SwitchPreference(it, Defaults.PREF_FLICK_SYMBOL_KEYS)
+    },
+    Setting(context, Settings.PREF_FLICK_REBOUND, R.string.flick_rebound, R.string.flick_rebound_summary) {
+        SwitchPreference(it, Defaults.PREF_FLICK_REBOUND)
+    },
+    Setting(context, Settings.PREF_FLICK_REBOUND_STRENGTH, R.string.flick_rebound_strength) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_FLICK_REBOUND_STRENGTH,
+            range = 5f..100f,
+            description = { "$it%" }
+        )
+    },
+    Setting(
+        context, Settings.PREF_SPACEBAR_TRACKPAD, R.string.spacebar_trackpad,
+        R.string.spacebar_trackpad_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_SPACEBAR_TRACKPAD)
+    },
+    Setting(
+        context, Settings.PREF_SPACEBAR_TRACKPAD_HIDE_LABELS, R.string.spacebar_trackpad_hide_labels,
+        R.string.spacebar_trackpad_hide_labels_summary
+    ) {
+        SwitchPreference(it, Defaults.PREF_SPACEBAR_TRACKPAD_HIDE_LABELS)
+    },
+    Setting(context, Settings.PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY,
+        R.string.spacebar_trackpad_vertical_sensitivity
+    ) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY,
+            range = 0f..100f,
+            description = { "$it%" }
+        )
     },
     Setting(context, Settings.PREF_VIBRATE_ON, R.string.vibrate_on_keypress) {
         SwitchPreference(it, Defaults.PREF_VIBRATE_ON)

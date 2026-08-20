@@ -31,6 +31,8 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -944,9 +946,64 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
                 !preferPinnedKeys &&
                 (isExternalSuggestionVisible || shouldShowSuggestionContent())
         val showChips = showSuggestionContent && !isExternalSuggestionVisible && shouldUseChipSuggestions()
-        suggestionsStrip.isVisible = showSuggestionContent && !showChips
-        suggestionsChipScroll.isVisible = showChips
-        pinnedKeys.isVisible = showSuggestions && allowPinnedKeys && !showSuggestionContent && hasPinnedKeys
+        suggestionsStrip.fadeVisibility(showSuggestionContent && !showChips)
+        suggestionsChipScroll.fadeVisibility(showChips)
+        pinnedKeys.fadeVisibility(showSuggestions && allowPinnedKeys && !showSuggestionContent && hasPinnedKeys)
+    }
+
+    /** what each of the swapping containers is currently animating towards */
+    private val fadeTargets = HashMap<View, Boolean>()
+
+    /**
+     * Crossfades a container in or out instead of snapping it, which is what turns the swap
+     * between the toolbar keys and the suggestions into a transition rather than a jump.
+     * The animation runs on the view property animator, so it is driven by the display's own
+     * frame callbacks and stays smooth at any refresh rate.
+     */
+    private fun View.fadeVisibility(visible: Boolean) {
+        val sv = Settings.getValues()
+        val duration = if (sv.mStripCrossfade) sv.mStripCrossfadeDuration.toLong() else 0L
+        if (duration <= 0L) {
+            fadeTargets.remove(this)
+            animate().cancel()
+            alpha = 1f
+            scaleX = 1f
+            scaleY = 1f
+            isVisible = visible
+            return
+        }
+        if (fadeTargets[this] == visible && isVisible == visible) return
+        fadeTargets[this] = visible
+        animate().cancel()
+        if (visible) {
+            if (!isVisible) {
+                alpha = 0f
+                scaleX = ENTER_SCALE
+                scaleY = ENTER_SCALE
+            }
+            isVisible = true
+            animate().alpha(1f).scaleX(1f).scaleY(1f)
+                .setDuration(duration)
+                .setInterpolator(DecelerateInterpolator(1.7f))
+                .start()
+        } else {
+            if (!isVisible) {
+                alpha = 1f
+                scaleX = 1f
+                scaleY = 1f
+                return
+            }
+            animate().alpha(0f).scaleX(ENTER_SCALE).scaleY(ENTER_SCALE)
+                .setDuration(duration)
+                .setInterpolator(AccelerateInterpolator(1.4f))
+                .withEndAction {
+                    isVisible = false
+                    alpha = 1f
+                    scaleX = 1f
+                    scaleY = 1f
+                }
+                .start()
+        }
     }
 
     private fun populatePinnedKeys(
@@ -1243,6 +1300,9 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     companion object {
+        /** how small a container starts out or ends up while it fades */
+        private const val ENTER_SCALE = 0.92f
+
         @JvmField
         var DEBUG_SUGGESTIONS = false
         private const val DEBUG_INFO_TEXT_SIZE_IN_DIP = 6.5f

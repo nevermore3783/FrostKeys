@@ -172,6 +172,9 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private boolean mIsInFlick;
     private float mFlickProgress;
 
+    /** true while the spacebar is driving the cursor in both directions at once */
+    private boolean mIsInTrackpad;
+
     boolean mIsInDraggingFinger;
     // true if this pointer is sliding from a modifier key and in the sliding key input mode,
     // so that further modifier keys should be ignored.
@@ -971,6 +974,12 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             int dX = x - mStartX;
             int dY = y - mStartY;
 
+            if (sv.mSpacebarTrackpad
+                    && sv.mSpaceSwipeHorizontal == KeyboardActionListener.SwipeAction.MOVE_CURSOR) {
+                onSpacebarTrackpadMove(dX, dY, sv);
+                return;
+            }
+
             // Touchpad mode
             mTouchpadHandler.enableTouchpadMove(x, y, sListener);
 
@@ -1010,6 +1019,37 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                 sListener.onMoveDeletePointer(steps);
             }
         }
+    }
+
+    /**
+     * Moves the cursor freely in both directions, the way a trackpad does, instead of locking on
+     * to whichever axis the finger moved along first. Vertical movement gets its own, coarser
+     * step, since a line is a much bigger jump than a character.
+     */
+    private void onSpacebarTrackpadMove(final int dX, final int dY, final SettingsValues sv) {
+        if (!mIsInTrackpad) {
+            if (Math.abs(dX) < sPointerStep && Math.abs(dY) < sPointerStep) return;
+            mIsInTrackpad = true;
+            // the keyboard cannot be typed on while it acts as a trackpad
+            mInHorizontalSwipe = true;
+            sTimerProxy.cancelKeyTimersOf(this);
+            sDrawingProxy.setTrackpadActive(true);
+        }
+        // 0 makes a line take three times the travel of a character, 100 makes them equal
+        final int verticalStep = Math.max(1, (int) (sPointerStep
+                * (3f - 2f * (sv.mSpacebarTrackpadVerticalSensitivity / 100f))));
+        final int stepsX = dX / sPointerStep;
+        final int stepsY = dY / verticalStep;
+        if (stepsX == 0 && stepsY == 0) return;
+        mStartX += stepsX * sPointerStep;
+        mStartY += stepsY * verticalStep;
+        sListener.onTrackpadCursorMove(stepsX, stepsY);
+    }
+
+    private void endSpacebarTrackpad() {
+        if (!mIsInTrackpad) return;
+        mIsInTrackpad = false;
+        sDrawingProxy.setTrackpadActive(false);
     }
 
     private void onMoveEventInternal(final int x, final int y, final long eventTime) {
@@ -1123,6 +1163,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         if (mKeySwipeAllowed) {
             mKeySwipeAllowed = false;
             sInKeySwipe = false;
+            endSpacebarTrackpad();
 
             // Touchpad mode
             mTouchpadHandler.disableTouchpadMode();
@@ -1171,6 +1212,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             return;
         }
         resetFlick();
+        endSpacebarTrackpad();
         mIsTrackingForActionDisabled = true;
     }
 
@@ -1388,6 +1430,9 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                     Constants.NOT_A_COORDINATE, false);
         }
         callListenerOnRelease(key, key.getCode(), false);
+        if (Settings.getValues().mFlickRebound) {
+            sDrawingProxy.startFlickRebound(key);
+        }
     }
 
     private void detectAndSendKey(final Key key, final int x, final int y, final long eventTime) {

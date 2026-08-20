@@ -75,6 +75,20 @@ fun AppearanceScreen(
         SettingsWithoutKey.BACKGROUND_IMAGE_LANDSCAPE,
         Settings.PREF_KEYBOARD_CORNER_RADIUS,
         "adjust_liquid_glass_dialog",
+        Settings.PREF_KEY_PRESS_SCALE,
+        Settings.PREF_KEY_PRESS_LABEL_SCALE,
+        Settings.PREF_KEY_PRESS_HIGHLIGHT,
+        if (prefs.getInt(Settings.PREF_KEY_PRESS_HIGHLIGHT, Defaults.PREF_KEY_PRESS_HIGHLIGHT) > 0)
+            Settings.PREF_KEY_PRESS_HIGHLIGHT_MODE else null,
+        Settings.PREF_KEY_PRESS_ANIM_DURATION,
+        Settings.PREF_KEY_RELEASE_ANIM_DURATION,
+        Settings.PREF_KEY_PRESS_EASING,
+        Settings.PREF_STRIP_CROSSFADE,
+        if (prefs.getBoolean(Settings.PREF_STRIP_CROSSFADE, Defaults.PREF_STRIP_CROSSFADE))
+            Settings.PREF_STRIP_CROSSFADE_DURATION else null,
+        Settings.PREF_POPUP_KEYS_BLUR,
+        if (prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR))
+            Settings.PREF_POPUP_KEYS_BLUR_RADIUS else null,
         R.string.settings_category_miscellaneous,
         Settings.PREF_ENABLE_SPLIT_KEYBOARD,
         if (prefs.getBoolean(Settings.PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE, Defaults.PREF_ENABLE_SPLIT_KEYBOARD)
@@ -386,6 +400,91 @@ fun createAppearanceSettings(context: Context) = listOf(
                     )
                 }
             }
+        )
+    },
+    Setting(context, Settings.PREF_KEY_PRESS_SCALE, R.string.key_press_scale, R.string.key_press_scale_summary) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_KEY_PRESS_SCALE,
+            range = 70f..100f,
+            description = { if (it >= 100) stringResource(R.string.key_press_scale_off) else "$it%" }
+        )
+    },
+    Setting(context, Settings.PREF_KEY_PRESS_LABEL_SCALE, R.string.key_press_label_scale, R.string.key_press_label_scale_summary) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_KEY_PRESS_LABEL_SCALE,
+            range = 60f..100f,
+            description = { if (it >= 100) stringResource(R.string.key_press_scale_off) else "$it%" }
+        )
+    },
+    Setting(context, Settings.PREF_KEY_PRESS_HIGHLIGHT, R.string.key_press_highlight, R.string.key_press_highlight_summary) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_KEY_PRESS_HIGHLIGHT,
+            range = 0f..100f,
+            description = { if (it <= 0) stringResource(R.string.key_press_scale_off) else "$it%" }
+        )
+    },
+    Setting(context, Settings.PREF_KEY_PRESS_HIGHLIGHT_MODE, R.string.key_press_highlight_mode) { setting ->
+        val items = listOf(
+            stringResource(R.string.key_press_highlight_auto) to 0,
+            stringResource(R.string.key_press_highlight_lighten) to 1,
+            stringResource(R.string.key_press_highlight_darken) to 2
+        )
+        ListPreference(setting, items, Defaults.PREF_KEY_PRESS_HIGHLIGHT_MODE)
+    },
+    Setting(context, Settings.PREF_KEY_PRESS_ANIM_DURATION, R.string.key_press_anim_duration) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_KEY_PRESS_ANIM_DURATION,
+            range = 0f..300f,
+            description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
+        )
+    },
+    Setting(context, Settings.PREF_KEY_RELEASE_ANIM_DURATION, R.string.key_release_anim_duration) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_KEY_RELEASE_ANIM_DURATION,
+            range = 0f..500f,
+            description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
+        )
+    },
+    Setting(context, Settings.PREF_KEY_PRESS_EASING, R.string.key_press_easing) { setting ->
+        val items = listOf(
+            stringResource(R.string.key_press_easing_linear) to 0,
+            stringResource(R.string.key_press_easing_smooth) to 1,
+            stringResource(R.string.key_press_easing_spring) to 2
+        )
+        ListPreference(setting, items, Defaults.PREF_KEY_PRESS_EASING)
+    },
+    Setting(context, Settings.PREF_STRIP_CROSSFADE, R.string.strip_crossfade, R.string.strip_crossfade_summary) {
+        SwitchPreference(it, Defaults.PREF_STRIP_CROSSFADE)
+    },
+    Setting(context, Settings.PREF_STRIP_CROSSFADE_DURATION, R.string.strip_crossfade_duration) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_STRIP_CROSSFADE_DURATION,
+            range = 40f..400f,
+            description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
+        )
+    },
+    Setting(context, Settings.PREF_POPUP_KEYS_BLUR, R.string.popup_keys_blur, R.string.popup_keys_blur_summary) {
+        SwitchPreference(it, Defaults.PREF_POPUP_KEYS_BLUR)
+    },
+    Setting(context, Settings.PREF_POPUP_KEYS_BLUR_RADIUS, R.string.popup_keys_blur_radius) { setting ->
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_POPUP_KEYS_BLUR_RADIUS,
+            range = 10f..100f,
+            description = { "$it%" }
         )
     },
     Setting(

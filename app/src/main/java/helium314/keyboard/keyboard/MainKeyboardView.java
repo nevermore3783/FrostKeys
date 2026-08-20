@@ -114,6 +114,8 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     // Key preview
     private final KeyPreviewDrawParams mKeyPreviewDrawParams;
     private final KeyPreviewChoreographer mKeyPreviewChoreographer;
+    /** fades the key labels while the spacebar drives the cursor */
+    private android.animation.ValueAnimator mLabelFadeAnimator;
 
     // More keys keyboard
     private final Paint mBackgroundDimAlphaPaint = new Paint(); // todo: not used at all
@@ -440,6 +442,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     @Override
     public void onKeyPressed(@NonNull final Key key, final boolean withPreview) {
         key.onPressed();
+        mKeyPressAnimator.onPressed(key);
         invalidateKey(key);
 
         final Keyboard keyboard = getKeyboard();
@@ -485,6 +488,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     @Override
     public void onKeyReleased(@NonNull final Key key, final boolean withAnimation) {
         key.onReleased();
+        mKeyPressAnimator.onReleased(key);
         invalidateKey(key);
         if (key.hasPreview()) {
             if (withAnimation) {
@@ -545,6 +549,30 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         } else {
             mKeyPreviewChoreographer.setKeyPreviewText(key, key.getPreviewLabel());
         }
+    }
+
+    // Implements {@link DrawingProxy#setTrackpadActive(boolean)}.
+    @Override
+    public void setTrackpadActive(final boolean active) {
+        // still fade back in when switched off mid gesture, otherwise the labels would stay hidden
+        if (active && !Settings.getValues().mSpacebarTrackpadHideLabels) {
+            return;
+        }
+        if (mLabelFadeAnimator != null) {
+            mLabelFadeAnimator.cancel();
+        }
+        final float target = active ? 1f : 0f;
+        final float start = getLabelHideProgress();
+        if (start == target) {
+            return;
+        }
+        // driven by the animation framework, so it lands on every frame the display puts out
+        mLabelFadeAnimator = android.animation.ValueAnimator.ofFloat(start, target);
+        mLabelFadeAnimator.setDuration(Settings.getValues().mStripCrossfadeDuration);
+        mLabelFadeAnimator.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        mLabelFadeAnimator.addUpdateListener(
+                animation -> setLabelHideProgress((Float) animation.getAnimatedValue()));
+        mLabelFadeAnimator.start();
     }
 
     // Implements {@link DrawingProxy#dismissGestureFloatingPreviewTextWithoutDelay()}.

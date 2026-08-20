@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.accessibility.PopupKeysKeyboardAccessibilityDelegate;
@@ -27,6 +28,8 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.settings.Settings;
+import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.common.CoordinateUtils;
 
 /**
@@ -93,8 +96,116 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         drawIcon(canvas, mDivider, iconX, iconY, iconWidth, iconHeight);
     }
 
+    /** what is behind the panel, blurred, so the panel reads as glass rather than as a tinted box */
+    @Nullable
+    private android.graphics.Bitmap mBackdrop;
+    private final android.graphics.Paint mBackdropPaint =
+            new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG);
+    private final android.graphics.RectF mBackdropRect = new android.graphics.RectF();
+    private final android.graphics.Path mBackdropClip = new android.graphics.Path();
+
+    @Override
+    public void draw(@NonNull final android.graphics.Canvas canvas) {
+        drawBackdrop(canvas);
+        super.draw(canvas);
+    }
+
+    private void drawBackdrop(@NonNull final android.graphics.Canvas canvas) {
+        final android.graphics.Bitmap backdrop = mBackdrop;
+        if (backdrop == null || backdrop.isRecycled()) {
+            return;
+        }
+        mBackdropRect.set(0f, 0f, getWidth(), getHeight());
+        final float radius = backgroundCornerRadius();
+        final int saveCount = canvas.save();
+        if (radius > 0f) {
+            mBackdropClip.reset();
+            mBackdropClip.addRoundRect(mBackdropRect, radius, radius, android.graphics.Path.Direction.CW);
+            canvas.clipPath(mBackdropClip);
+        }
+        canvas.drawBitmap(backdrop, null, mBackdropRect, mBackdropPaint);
+        canvas.restoreToCount(saveCount);
+    }
+
+    /** the radius the panel's own background is drawn with, so the backdrop does not show corners */
+    private float backgroundCornerRadius() {
+        final android.graphics.drawable.Drawable background = getBackground();
+        if (background == null || android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N) {
+            return 0f;
+        }
+        try {
+            final android.graphics.Outline outline = new android.graphics.Outline();
+            background.setBounds(0, 0, getWidth(), getHeight());
+            background.getOutline(outline);
+            final float radius = outline.getRadius();
+            return radius > 0f ? radius : 0f;
+        } catch (Exception e) {
+            return 0f;
+        }
+    }
+
+    /**
+     * Grabs the keyboard underneath and blurs it. Done once when the panel appears rather than
+     * every frame, since neither the panel nor what is under it moves while it is open.
+     */
+    private void captureBackdrop() {
+        mBackdrop = null;
+        final SettingsValues sv = Settings.getValues();
+        if (sv == null || !sv.mPopupKeysBlur || sv.mPopupKeysBlurRadius <= 0) {
+            return;
+        }
+        final int width = getWidth();
+        final int height = getHeight();
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+        final MainKeyboardView source = KeyboardSwitcher.getInstance().getMainKeyboardView();
+        if (source == null || source.getWidth() <= 0) {
+            return;
+        }
+        try {
+            final int[] here = new int[2];
+            final int[] there = new int[2];
+            getLocationInWindow(here);
+            source.getLocationInWindow(there);
+            // captured small on purpose, the downscale is where most of the blur comes from
+            final int sample = 6;
+            final android.graphics.Bitmap shot = android.graphics.Bitmap.createBitmap(
+                    Math.max(1, width / sample), Math.max(1, height / sample),
+                    android.graphics.Bitmap.Config.ARGB_8888);
+            final android.graphics.Canvas shotCanvas = new android.graphics.Canvas(shot);
+            shotCanvas.scale(1f / sample, 1f / sample);
+            shotCanvas.translate(there[0] - here[0], there[1] - here[1]);
+            source.draw(shotCanvas);
+            source.releaseSoftwareBuffer();
+            mBackdrop = blur(shot, sv.mPopupKeysBlurRadius);
+        } catch (Exception e) {
+            mBackdrop = null;
+        }
+    }
+
+    /** Repeated halving with bilinear filtering, which is a cheap and good enough box blur. */
+    private static android.graphics.Bitmap blur(final android.graphics.Bitmap source, final int radius) {
+        final int passes = Math.max(1, Math.min(4, radius / 20));
+        android.graphics.Bitmap current = source;
+        final android.graphics.Paint paint =
+                new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG);
+        for (int i = 0; i < passes; i++) {
+            final int w = Math.max(1, current.getWidth() / 2);
+            final int h = Math.max(1, current.getHeight() / 2);
+            if (w <= 1 && h <= 1) break;
+            final android.graphics.Bitmap smaller =
+                    android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888);
+            new android.graphics.Canvas(smaller)
+                    .drawBitmap(current, null, new android.graphics.Rect(0, 0, w, h), paint);
+            current = smaller;
+        }
+        return current;
+    }
+
     @Override
     public void setKeyboard(@NonNull final Keyboard keyboard) {
+        mBackdrop = null;
         super.setKeyboard(keyboard);
         mKeyDetector.setKeyboard(
                 keyboard, -getPaddingLeft(), -getPaddingTop() + getVerticalCorrection());
@@ -142,6 +253,11 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
     private void showPopupKeysPanelInternal(final View parentView, final Controller controller,
             final int pointX, final int pointY) {
         mController = controller;
+        // grabbed once the panel has been placed, since only then is it known what it covers
+        post(() -> {
+            captureBackdrop();
+            invalidate();
+        });
         final View container = getContainerView();
         // The coordinates of panel's left-top corner in parentView's coordinate system.
         // We need to consider background drawable paddings.

@@ -61,6 +61,22 @@ object Defaults {
     const val PREF_SHOW_EMOJI_DESCRIPTIONS = true
     const val PREF_PERSISTENT_EMOJI_ROW = false
     const val PREF_FLICK_SYMBOL_KEYS = false
+    const val PREF_FLICK_REBOUND = true
+    const val PREF_FLICK_REBOUND_STRENGTH = 45
+    const val PREF_KEY_PRESS_SCALE = 100
+    const val PREF_KEY_PRESS_LABEL_SCALE = 100
+    const val PREF_KEY_PRESS_ANIM_DURATION = 60
+    const val PREF_KEY_RELEASE_ANIM_DURATION = 130
+    const val PREF_KEY_PRESS_EASING = 1
+    const val PREF_KEY_PRESS_HIGHLIGHT = 0
+    const val PREF_KEY_PRESS_HIGHLIGHT_MODE = 0
+    const val PREF_STRIP_CROSSFADE = true
+    const val PREF_STRIP_CROSSFADE_DURATION = 140
+    const val PREF_POPUP_KEYS_BLUR = true
+    const val PREF_POPUP_KEYS_BLUR_RADIUS = 40
+    const val PREF_SPACEBAR_TRACKPAD = false
+    const val PREF_SPACEBAR_TRACKPAD_HIDE_LABELS = true
+    const val PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY = 50
 
     @JvmField
     var PREF_POPUP_ON = true

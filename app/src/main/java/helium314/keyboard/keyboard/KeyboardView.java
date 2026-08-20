@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
@@ -31,6 +32,7 @@ import androidx.annotation.Nullable;
 
 import helium314.keyboard.keyboard.emoji.EmojiPageKeyboardView;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
+import helium314.keyboard.keyboard.internal.KeyPressAnimator;
 import helium314.keyboard.keyboard.internal.KeyVisualAttributes;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
@@ -100,6 +102,16 @@ public class KeyboardView extends View {
     private String mFlickLabel;
     /** 0 when the flick just started, 1 once releasing would enter {@link #mFlickLabel} */
     private float mFlickProgress;
+    /** shrinks and brightens keys while they are held */
+    protected final KeyPressAnimator mKeyPressAnimator = new KeyPressAnimator();
+    /** 1 while the keyboard is being used as a trackpad and the labels are faded out */
+    private float mLabelHideProgress;
+    /** sampled once per frame, the press highlight brightens on dark themes and dims on light ones */
+    private boolean mIsNightTheme;
+    /** the key springing back after a flick entered its symbol, null when nothing is rebounding */
+    @Nullable
+    private Key mReboundKey;
+    private long mReboundStartTime;
     /**
      * Scale for downscaling icons and fixed size backgrounds if keyboard height is
      * set below 80%
@@ -310,6 +322,18 @@ public class KeyboardView extends View {
         return true;
     }
 
+    /**
+     * Drops the software drawing buffer. Rendering this view into a software canvas, which the
+     * symbol popup does to grab what is behind it, allocates one on a device that otherwise draws
+     * through hardware and never needs it.
+     */
+    public void releaseSoftwareBuffer() {
+        if (isHardwareAccelerated()) {
+            freeOffscreenBuffer();
+            invalidateAllKeys();
+        }
+    }
+
     private void freeOffscreenBuffer() {
         mOffscreenCanvas.setBitmap(null);
         mOffscreenCanvas.setMatrix(null);
@@ -328,6 +352,7 @@ public class KeyboardView extends View {
             }
 
             mShowsHints = Settings.getValues().mShowsHints;
+            mIsNightTheme = KeyboardTheme.isDarkThemeActive(getContext());
             final float scale = Settings.getValues().mKeyboardHeightScale;
             mIconScaleFactor = scale < 0.8f ? scale + 0.2f : 1f;
             final Paint paint = mPaint;
@@ -371,10 +396,64 @@ public class KeyboardView extends View {
             }
 
             mInvalidatedKeys.clear();
+            if (mKeyPressAnimator.hasRunningAnimation()) {
+                // ask for the keys that still have to move again on the next frame the view is
+                // drawn, which is whatever rate the display is running at
+                mKeyPressAnimator.clearRunningAnimationFlag();
+                mKeyPressAnimator.collectAnimatingKeys(mInvalidatedKeys);
+                postInvalidateOnAnimation();
+            }
             mInvalidateAllKeys = false;
         } finally {
             Trace.endSection();
         }
+    }
+
+    /**
+     * Springs a key's label back up after a flick pulled its symbol down and entered it, so the
+     * key visibly recoils instead of the symbol just vanishing.
+     */
+    public void startFlickRebound(@NonNull final Key key) {
+        mReboundKey = key;
+        mReboundStartTime = android.view.animation.AnimationUtils.currentAnimationTimeMillis();
+        invalidateKey(key);
+    }
+
+    /** How far the label of {@code key} is displaced by the flick rebound right now. */
+    private float reboundOffsetOf(@NonNull final Key key) {
+        if (key != mReboundKey) {
+            return 0f;
+        }
+        final int duration = Math.max(1, Settings.getValues().mKeyReleaseAnimDuration * 2);
+        final long elapsed = android.view.animation.AnimationUtils.currentAnimationTimeMillis() - mReboundStartTime;
+        final float t = elapsed / (float) duration;
+        if (t >= 1f) {
+            mReboundKey = null;
+            return 0f;
+        }
+        // a bounce that decays to nothing, so the label overshoots once and settles
+        final float amplitude = Settings.getValues().mFlickReboundStrength / 100f
+                * key.getHeight() * MAX_REBOUND_TRAVEL;
+        postInvalidateOnAnimation();
+        return (float) (amplitude * Math.sin(t * Math.PI * 2.2) * (1f - t));
+    }
+
+    /**
+     * Fades the labels, icons and hints out, leaving the key shapes. Used while the spacebar is
+     * driving the cursor, where the keys cannot be typed on anyway.
+     * @param progress 0 for normal labels, 1 for fully faded out.
+     */
+    public void setLabelHideProgress(final float progress) {
+        final float clamped = Math.max(0f, Math.min(1f, progress));
+        if (clamped == mLabelHideProgress) {
+            return;
+        }
+        mLabelHideProgress = clamped;
+        invalidateAllKeys();
+    }
+
+    public float getLabelHideProgress() {
+        return mLabelHideProgress;
     }
 
     private void onDrawKey(@NonNull final Key key, @NonNull final Canvas canvas,
@@ -389,10 +468,48 @@ public class KeyboardView extends View {
                 attr);
         params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
 
+        final float pressProgress = mKeyPressAnimator.progressOf(key);
+        final float keyScale = KeyPressAnimator.keyScale(pressProgress);
+        final float centerX = key.getDrawWidth() * 0.5f;
+        final float centerY = key.getHeight() * 0.5f;
+        final int keyScaleSave;
+        if (keyScale != 1f) {
+            keyScaleSave = canvas.save();
+            canvas.scale(keyScale, keyScale, centerX, centerY);
+        } else {
+            keyScaleSave = -1;
+        }
+
         if (!key.isSpacer()) {
             final Drawable background = key.selectBackgroundDrawable(
                     mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground, mActionKeyBackground);
-            onDrawKeyBackground(key, canvas, background);
+            final ColorFilter highlight = mKeyPressAnimator.highlightFilter(pressProgress, mIsNightTheme);
+            if (highlight != null) {
+                background.setColorFilter(highlight);
+                onDrawKeyBackground(key, canvas, background);
+                background.clearColorFilter();
+            } else {
+                onDrawKeyBackground(key, canvas, background);
+            }
+        }
+        // the label may shrink further than the key does, and fades out while the keyboard is
+        // being used as a trackpad
+        final float labelScale = KeyPressAnimator.labelScale(pressProgress);
+        final float reboundOffset = reboundOffsetOf(key);
+        final int labelSave;
+        if (labelScale != 1f || reboundOffset != 0f) {
+            labelSave = canvas.save();
+            if (reboundOffset != 0f) {
+                canvas.translate(0f, reboundOffset);
+            }
+            if (labelScale != 1f) {
+                canvas.scale(labelScale, labelScale, centerX, centerY);
+            }
+        } else {
+            labelSave = -1;
+        }
+        if (mLabelHideProgress > 0f) {
+            params.mAnimAlpha = (int) (params.mAnimAlpha * (1f - mLabelHideProgress));
         }
         if (key == mFlickKey && mFlickLabel != null) {
             // The label of the key slides down out of the way while the symbol takes its place,
@@ -407,6 +524,12 @@ public class KeyboardView extends View {
         } else {
             onDrawKeyTopVisuals(key, canvas, paint, params);
         }
+        if (labelSave >= 0) {
+            canvas.restoreToCount(labelSave);
+        }
+        if (keyScaleSave >= 0) {
+            canvas.restoreToCount(keyScaleSave);
+        }
 
         canvas.translate(-keyDrawX, -keyDrawY);
     }
@@ -415,6 +538,8 @@ public class KeyboardView extends View {
     private static final float FLICK_LABEL_TRAVEL = 0.42f;
     /** how far above its final spot the flick symbol starts out */
     private static final float FLICK_SYMBOL_TRAVEL = 0.3f;
+    /** how far the label swings on a full strength flick rebound, as a share of the key height */
+    private static final float MAX_REBOUND_TRAVEL = 0.22f;
 
     /** Draws the symbol a flick is pulling into the middle of the key. */
     private void onDrawFlickLabel(@NonNull final Key key, @NonNull final Canvas canvas,
