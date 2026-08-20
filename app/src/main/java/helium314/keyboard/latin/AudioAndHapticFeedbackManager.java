@@ -71,6 +71,27 @@ public final class AudioAndHapticFeedbackManager {
         if (mVibrator == null || milliseconds <= 0) {
             return;
         }
+        if (android.os.Build.VERSION.SDK_INT >= 31) {
+            try {
+                boolean[] ok = mVibrator.arePrimitivesSupported(
+                        android.os.VibrationEffect.Composition.PRIMITIVE_CLICK);
+                if (ok.length > 0 && ok[0]) {
+                    final float scale = Math.min(1f, milliseconds / 50f);
+                    mVibrator.vibrate(
+                            android.os.VibrationEffect.startComposition()
+                                    .addPrimitive(
+                                            android.os.VibrationEffect.Composition.PRIMITIVE_CLICK,
+                                            scale)
+                                    .compose(),
+                            new android.os.VibrationAttributes.Builder()
+                                    .setUsage(android.os.VibrationAttributes.USAGE_TOUCH)
+                                    .build());
+                    return;
+                }
+            } catch (Exception e) {
+                // fall through to the old path
+            }
+        }
         mVibrator.vibrate(milliseconds);
     }
 
