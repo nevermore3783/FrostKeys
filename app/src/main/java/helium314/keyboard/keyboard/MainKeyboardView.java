@@ -531,6 +531,22 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         }
     }
 
+    // Implements {@link DrawingProxy#showFlickPreview(Key,String,float)}.
+    @Override
+    public void showFlickPreview(@Nullable final Key key, @Nullable final String flickLabel,
+            final float progress) {
+        setFlickPreview(key, flickLabel, progress);
+        if (key == null) {
+            return;
+        }
+        // keep the popup above the key in sync with what a release would enter
+        if (flickLabel != null && progress >= 1f) {
+            mKeyPreviewChoreographer.setKeyPreviewText(key, flickLabel);
+        } else {
+            mKeyPreviewChoreographer.setKeyPreviewText(key, key.getPreviewLabel());
+        }
+    }
+
     // Implements {@link DrawingProxy#dismissGestureFloatingPreviewTextWithoutDelay()}.
     @Override
     public void dismissGestureFloatingPreviewTextWithoutDelay() {

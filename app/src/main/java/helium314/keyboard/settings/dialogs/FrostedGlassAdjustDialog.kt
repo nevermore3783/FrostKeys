@@ -116,7 +116,6 @@ fun FrostedGlassAdjustDialog(
 
     // 2. The temporary live state for the sliders
     var snapshot by remember { mutableStateOf(initialSnapshot) }
-    var isSaved by remember { mutableStateOf(false) }
 
     fun applyLivePreview(
         profile: FrostedProfileSnapshot,
@@ -155,7 +154,7 @@ fun FrostedGlassAdjustDialog(
             .putInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT, values.dark.alphabetVibrancy)
             .putFloat(Settings.PREF_FROSTED_DUST_ALPHA_NIGHT, values.dark.dustAlpha.coerceIn(1f, 10f))
             .putBoolean(Settings.PREF_FROSTED_DUST_ENABLED, values.dustEnabled)
-            .apply()
+            .commit()
     }
 
     fun requestFinalFrostedSync() {
@@ -193,16 +192,14 @@ fun FrostedGlassAdjustDialog(
     DisposableEffect(Unit) {
         onDispose {
             helium314.keyboard.settings.SettingsActivity.isTopBarHidden = false
-            if (!isSaved) {
-                // User cancelled or dismissed! Roll back preferences to the snapshot
-                writeSnapshotToPrefs(initialSnapshot)
-            }
-            
-            // Clear spoofing state
+
+            // Nothing to roll back: while the dialog is open the sliders only feed
+            // KeyboardTheme.livePreviewValues, the preferences are written by "Save" alone.
+            // Dropping the live preview is what returns the keyboard to the stored values.
             KeyboardTheme.themeOverride = null
             KeyboardTheme.livePreviewValues = null
-            
-            // Final catch-up refresh to sync keyboard with restored/final state
+
+            // Final catch-up refresh to sync keyboard with the stored state
             requestFinalFrostedSync()
         }
     }
@@ -699,8 +696,9 @@ fun FrostedGlassAdjustDialog(
 
                             Button(
                                 onClick = {
-                                    isSaved = true
                                     writeSnapshotToPrefs(snapshot)
+                                    KeyboardTheme.themeOverride = null
+                                    KeyboardTheme.livePreviewValues = null
                                     onDismissRequest()
                                 },
                                 modifier = Modifier

@@ -59,6 +59,7 @@ public class SettingsValues {
     public final int mDisplayOrientation;
     // From preferences
     public final boolean mAutoCap;
+    public final boolean mFlickSymbolKeys;
     public final boolean mVibrateOn;
     public final boolean mVibrateInDndMode;
     public final boolean mSoundOn;
@@ -192,6 +193,7 @@ public class SettingsValues {
         mToolbarSwipeDownToHide = prefs.getBoolean(Settings.PREF_TOOLBAR_SWIPE_DOWN_TO_HIDE, Defaults.PREF_TOOLBAR_SWIPE_DOWN_TO_HIDE);
         mToolbarHidingGlobal = isLocked || prefs.getBoolean(Settings.PREF_TOOLBAR_HIDING_GLOBAL, Defaults.PREF_TOOLBAR_HIDING_GLOBAL);
         mAutoCap = prefs.getBoolean(Settings.PREF_AUTO_CAP, Defaults.PREF_AUTO_CAP) && ScriptUtils.scriptSupportsUppercase(mLocale);
+        mFlickSymbolKeys = prefs.getBoolean(Settings.PREF_FLICK_SYMBOL_KEYS, Defaults.PREF_FLICK_SYMBOL_KEYS);
         mVibrateOn = Settings.readVibrationEnabled(prefs);
         mVibrateInDndMode = prefs.getBoolean(Settings.PREF_VIBRATE_IN_DND_MODE, Defaults.PREF_VIBRATE_IN_DND_MODE);
         mSoundOn = prefs.getBoolean(Settings.PREF_SOUND_ON, Defaults.PREF_SOUND_ON);

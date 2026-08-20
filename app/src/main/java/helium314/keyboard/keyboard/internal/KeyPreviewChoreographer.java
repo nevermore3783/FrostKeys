@@ -65,6 +65,14 @@ public final class KeyPreviewChoreographer {
         return mShowingKeyPreviewViews.containsKey(key);
     }
 
+    /** Shows {@code text} instead of the key's own label, used while flicking to a symbol. */
+    public void setKeyPreviewText(final Key key, final String text) {
+        final KeyPreviewView keyPreviewView = mShowingKeyPreviewViews.get(key);
+        if (keyPreviewView != null) {
+            keyPreviewView.setPreviewText(text);
+        }
+    }
+
     public void clear() {
         for (final KeyPreviewView keyPreviewView : mShowingKeyPreviewViews.values()) {
             removeFromParent(keyPreviewView);

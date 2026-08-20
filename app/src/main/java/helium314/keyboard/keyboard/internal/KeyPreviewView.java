@@ -93,6 +93,12 @@ public class KeyPreviewView extends TextView {
         setTextAndScaleX(previewLabel);
     }
 
+    /** Replaces the shown text without touching the rest of the preview's looks. */
+    public void setPreviewText(final String text) {
+        setCompoundDrawables(null, null, null, null);
+        setTextAndScaleX(text);
+    }
+
     public void setPreviewBackgroundResource(final int backgroundResourceId) {
         if (mBackgroundResourceId == backgroundResourceId) {
             return;

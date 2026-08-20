@@ -92,6 +92,14 @@ public class KeyboardView extends View {
     private Bitmap mOffscreenBuffer;
     /** Flag for whether the key hints should be displayed */
     private boolean mShowsHints;
+    /** The key a downward flick is currently pulling its symbol out of, null when not flicking */
+    @Nullable
+    private Key mFlickKey;
+    /** The symbol {@link #mFlickKey} is being flicked to */
+    @Nullable
+    private String mFlickLabel;
+    /** 0 when the flick just started, 1 once releasing would enter {@link #mFlickLabel} */
+    private float mFlickProgress;
     /**
      * Scale for downscaling icons and fixed size backgrounds if keyboard height is
      * set below 80%
@@ -386,9 +394,74 @@ public class KeyboardView extends View {
                     mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground, mActionKeyBackground);
             onDrawKeyBackground(key, canvas, background);
         }
-        onDrawKeyTopVisuals(key, canvas, paint, params);
+        if (key == mFlickKey && mFlickLabel != null) {
+            // The label of the key slides down out of the way while the symbol takes its place,
+            // so the key shows what a release would enter.
+            canvas.save();
+            canvas.translate(0f, mFlickProgress * key.getHeight() * FLICK_LABEL_TRAVEL);
+            params.mAnimAlpha = (int) (Constants.Color.ALPHA_OPAQUE * (1f - mFlickProgress));
+            onDrawKeyTopVisuals(key, canvas, paint, params);
+            canvas.restore();
+            params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
+            onDrawFlickLabel(key, canvas, paint, params);
+        } else {
+            onDrawKeyTopVisuals(key, canvas, paint, params);
+        }
 
         canvas.translate(-keyDrawX, -keyDrawY);
+    }
+
+    /** how far down the key label slides while the flick symbol replaces it */
+    private static final float FLICK_LABEL_TRAVEL = 0.42f;
+    /** how far above its final spot the flick symbol starts out */
+    private static final float FLICK_SYMBOL_TRAVEL = 0.3f;
+
+    /** Draws the symbol a flick is pulling into the middle of the key. */
+    private void onDrawFlickLabel(@NonNull final Key key, @NonNull final Canvas canvas,
+            @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
+        final String label = mFlickLabel;
+        if (label == null) {
+            return;
+        }
+        final float progress = mFlickProgress;
+        final float centerX = key.getDrawWidth() * 0.5f;
+        final float centerY = key.getHeight() * 0.5f;
+        paint.setTypeface(KeyboardTypeface.resolve(label, Typeface.DEFAULT_BOLD));
+        // grows from the size it has as a hint to the size the key label has
+        final float hintSize = key.selectHintTextSize(params) * mFontSizeMultiplier * 0.8f;
+        final float labelSize = key.selectTextSize(params) * mFontSizeMultiplier;
+        paint.setTextSize(hintSize + (labelSize - hintSize) * progress);
+        paint.setTextAlign(Align.CENTER);
+        paint.setTextScaleX(1.0f);
+        paint.clearShadowLayer();
+        paint.setColor(mColors.get(ColorType.KEY_TEXT));
+        // fades in a bit ahead of the movement, so the symbol is readable before it arrives
+        blendAlpha(paint, (int) (Constants.Color.ALPHA_OPAQUE * Math.min(1f, progress * 1.5f)));
+        final float charHeight = TypefaceUtils.getReferenceCharHeight(paint);
+        final float baseline = centerY + charHeight / 2.0f
+                - (1f - progress) * key.getHeight() * FLICK_SYMBOL_TRAVEL;
+        canvas.drawText(label, 0, label.length(), centerX, baseline, paint);
+    }
+
+    /**
+     * Show the symbol a downward flick on {@code key} is about to enter, see
+     * {@link helium314.keyboard.keyboard.internal.DrawingProxy#showFlickPreview}.
+     */
+    public void setFlickPreview(@Nullable final Key key, @Nullable final String flickLabel,
+            final float progress) {
+        if (mFlickKey == key && mFlickProgress == progress) {
+            return;
+        }
+        final Key previous = mFlickKey;
+        mFlickKey = (flickLabel == null) ? null : key;
+        mFlickLabel = flickLabel;
+        mFlickProgress = progress;
+        if (previous != null && previous != mFlickKey) {
+            invalidateKey(previous);
+        }
+        if (mFlickKey != null) {
+            invalidateKey(mFlickKey);
+        }
     }
 
     // Draw key background.

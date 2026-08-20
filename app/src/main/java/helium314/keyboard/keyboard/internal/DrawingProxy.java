@@ -65,4 +65,12 @@ public interface DrawingProxy {
      * Dismiss a gesture floating preview text without delay.
      */
     void dismissGestureFloatingPreviewTextWithoutDelay();
+
+    /**
+     * Show how far a downward flick on a key has come towards entering the key's symbol.
+     * @param key the {@link Key} being flicked, null to dismiss the preview.
+     * @param flickLabel the symbol the flick would enter.
+     * @param progress 0 when the flick just started, 1 once it would be entered on release.
+     */
+    void showFlickPreview(@Nullable Key key, @Nullable String flickLabel, float progress);
 }

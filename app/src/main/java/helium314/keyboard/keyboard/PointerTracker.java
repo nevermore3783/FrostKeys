@@ -22,6 +22,7 @@ import helium314.keyboard.keyboard.internal.BatchInputArbiter;
 import helium314.keyboard.keyboard.internal.BatchInputArbiter.BatchInputArbiterListener;
 import helium314.keyboard.keyboard.internal.BogusMoveEventDetector;
 import helium314.keyboard.keyboard.internal.DrawingProxy;
+import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.keyboard.internal.GestureEnabler;
 import helium314.keyboard.keyboard.internal.GestureStrokeDrawingParams;
 import helium314.keyboard.keyboard.internal.GestureStrokeDrawingPoints;
@@ -159,6 +160,18 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private PopupKeysPanel mPopupKeysPanel;
 
     // true if this pointer is in the dragging finger mode.
+    // Flick to symbol: how far down the finger has to travel, as a fraction of the key height,
+    // before a drag counts as a flick and before it would enter the symbol on release.
+    private static final float FLICK_START_RATIO = 0.22f;
+    private static final float FLICK_COMMIT_RATIO = 0.55f;
+    // a flick has to be clearly more vertical than horizontal, otherwise it is a drag to another key
+    private static final float FLICK_HORIZONTAL_TOLERANCE = 0.8f;
+
+    /** the symbol a downward flick from the pressed key would enter, null when it cannot flick */
+    private PopupKeySpec mFlickKey;
+    private boolean mIsInFlick;
+    private float mFlickProgress;
+
     boolean mIsInDraggingFinger;
     // true if this pointer is sliding from a modifier key and in the sliding key input mode,
     // so that further modifier keys should be ignored.
@@ -746,6 +759,10 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                 mStartX = x;
                 mStartY = y;
                 mStartTime = SystemClock.elapsedRealtime();
+                mFlickKey = (Settings.getValues().mFlickSymbolKeys && !mKeySwipeAllowed)
+                        ? PopopUtilKt.findFlickPopupKey(key) : null;
+                mIsInFlick = false;
+                mFlickProgress = 0f;
             }
         } finally {
             Trace.endSection();
@@ -1004,6 +1021,10 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             return;
         }
 
+        if (mFlickKey != null && !sInGesture && !isShowingPopupKeysPanel() && updateFlick(x, y)) {
+            return;
+        }
+
         final Key newKey = onMoveKey(x, y);
         final int lastX = mLastX;
         final int lastY = mLastY;
@@ -1071,6 +1092,9 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         sTimerProxy.cancelKeyTimersOf(this);
         final boolean isInDraggingFinger = mIsInDraggingFinger;
         final boolean isInSlidingKeyInput = mIsInSlidingKeyInput;
+        final PopupKeySpec flickKey = mIsInFlick ? mFlickKey : null;
+        final boolean commitFlick = mIsInFlick && mFlickProgress >= 1f;
+        resetFlick();
         resetKeySelectionByDraggingFinger();
         mIsDetectingGesture = false;
         final Key currentKey = mCurrentKey;
@@ -1130,6 +1154,11 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                 && (currentKey.getCode() == currentRepeatingKeyCode) && !isInDraggingFinger) {
             return;
         }
+        if (commitFlick && flickKey != null && currentKey != null) {
+            callListenerOnFlickInput(currentKey, flickKey, eventTime);
+            return;
+        }
+        // a flick that was pulled back up before reaching the symbol stays an ordinary keypress
         detectAndSendKey(currentKey, mKeyX, mKeyY, eventTime);
         if (isInSlidingKeyInput) {
             callListenerOnFinishSlidingInput();
@@ -1141,6 +1170,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         if (isShowingPopupKeysPanel()) {
             return;
         }
+        resetFlick();
         mIsTrackingForActionDisabled = true;
     }
 
@@ -1291,6 +1321,73 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         // less than 15% of width from edge
         return x > key.getX() + key.getWidth() * 0.15 && x < key.getX() + key.getWidth() * 0.85
                 && y > key.getY() + key.getHeight() * 0.15 && y < key.getY() + key.getHeight() * 0.85;
+    }
+
+    /**
+     * Tracks a downward flick towards the pressed key's symbol.
+     * @return true when the move belongs to the flick and should not be handled as anything else.
+     */
+    private boolean updateFlick(final int x, final int y) {
+        if (mKeyboard == null || mCurrentKey == null) {
+            mFlickKey = null;
+            return false;
+        }
+        final float keyHeight = mKeyboard.mMostCommonKeyHeight;
+        final float startDistance = keyHeight * FLICK_START_RATIO;
+        final float commitDistance = keyHeight * FLICK_COMMIT_RATIO;
+        final int dx = x - mStartX;
+        final int dy = y - mStartY;
+        if (!mIsInFlick) {
+            if (dy < startDistance) {
+                // moving up or sideways instead: this pointer is not going to flick at all
+                if (dy < -startDistance || Math.abs(dx) > startDistance) {
+                    mFlickKey = null;
+                }
+                return false;
+            }
+            if (Math.abs(dx) > dy * FLICK_HORIZONTAL_TOLERANCE) {
+                mFlickKey = null;
+                return false;
+            }
+            // The finger is on its way down, so this is no longer a press, a long press or a
+            // gesture. Take the key over until it is released.
+            mIsInFlick = true;
+            mIsDetectingGesture = false;
+            mCurrentRepeatingKeyCode = Constants.NOT_A_CODE;
+            sTimerProxy.cancelKeyTimersOf(this);
+        }
+        final float progress = Math.max(0f, Math.min(1f,
+                (dy - startDistance) / (commitDistance - startDistance)));
+        if (progress != mFlickProgress) {
+            mFlickProgress = progress;
+            sDrawingProxy.showFlickPreview(mCurrentKey, mFlickKey.mLabel, progress);
+        }
+        return true;
+    }
+
+    private void resetFlick() {
+        mFlickKey = null;
+        mIsInFlick = false;
+        mFlickProgress = 0f;
+        sDrawingProxy.showFlickPreview(null, null, 0f);
+    }
+
+    private void callListenerOnFlickInput(final Key key, final PopupKeySpec flickKey,
+            final long eventTime) {
+        if (DEBUG_LISTENER) {
+            Log.d(TAG, String.format(Locale.US, "[%d] onFlickInput: %s", mPointerId, flickKey.mLabel));
+        }
+        if (!key.isEnabled()) {
+            return;
+        }
+        sTypingTimeRecorder.onCodeInput(flickKey.mCode, eventTime);
+        if (flickKey.mOutputText != null) {
+            sListener.onTextInput(flickKey.mOutputText);
+        } else if (flickKey.mCode != KeyCode.NOT_SPECIFIED) {
+            sListener.onCodeInput(flickKey.mCode, Constants.NOT_A_COORDINATE,
+                    Constants.NOT_A_COORDINATE, false);
+        }
+        callListenerOnRelease(key, key.getCode(), false);
     }
 
     private void detectAndSendKey(final Key key, final int x, final int y, final long eventTime) {

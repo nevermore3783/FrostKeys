@@ -60,6 +60,8 @@ object Defaults {
     const val PREF_INLINE_EMOJI_SEARCH = true
     const val PREF_SHOW_EMOJI_DESCRIPTIONS = true
     const val PREF_PERSISTENT_EMOJI_ROW = false
+    const val PREF_FLICK_SYMBOL_KEYS = false
+
     @JvmField
     var PREF_POPUP_ON = true
     const val PREF_AUTO_CORRECTION = true
