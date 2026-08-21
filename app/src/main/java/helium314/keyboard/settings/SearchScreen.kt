@@ -52,6 +52,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,9 +98,50 @@ data class SearchState(
     val searchText: TextFieldValue,
     val onSearchChange: (TextFieldValue) -> Unit,
     val setShowSearch: (Boolean) -> Unit,
-    val searchField: @Composable () -> Unit
+    val searchField: @Composable () -> Unit,
+    /**
+     * Non-null exactly while something is typed into the search field, and then renders the
+     * matching settings. A screen shows this in place of its own content and keeps [searchField]
+     * itself in the very same spot either way: a composable that moves from one branch of the
+     * tree to another is detached and re-attached, which drops its focus and takes the keyboard
+     * down with it - once on the first typed character, and again on deleting the last one.
+     */
+    val searchResults: (@Composable () -> Unit)?
 )
+
+/** Renders whatever a search term matched, for a screen to show instead of its own content. */
+@Composable
+private fun <T: Any?> SearchResults(
+    query: String,
+    filteredItems: (String) -> List<T>,
+    itemContent: @Composable (T) -> Unit,
+    itemKey: ((T) -> Any)?
+) {
+    // recomputed only when the query really changes, so a recomposition does not re-filter
+    val items = remember(query) { filteredItems(query) }
+    items.forEach { item ->
+        if (itemKey == null) itemContent(item)
+        else key(itemKey(item)) { itemContent(item) }
+    }
+}
 val LocalSearchState = staticCompositionLocalOf<SearchState?> { null }
+
+/**
+ * Renders the search field, followed by the search results if a term is entered.
+ *
+ * Returns true when the results were rendered, in which case the screen must not draw its own
+ * content - `if (SearchFieldWithResults()) return@Column`. The field is emitted before the
+ * branch on purpose, so that it stays in the same place in the tree whether a search is running
+ * or not: moving it would detach it and drop the focus, taking the keyboard down with it.
+ */
+@Composable
+fun SearchFieldWithResults(): Boolean {
+    val searchState = LocalSearchState.current ?: return false
+    searchState.searchField()
+    val results = searchState.searchResults ?: return false
+    results()
+    return true
+}
 
 val materialSymbols = FontFamily(Font(R.font.material_symbols_rounded, variationSettings = FontVariation.Settings(FontVariation.Setting("FILL", 1f))))
 
@@ -145,7 +187,9 @@ fun SearchSettingsScreen(
                             if (searchState != null) {
                                 searchState.searchField()
                             }
-                            settings.forEach {
+                            val results = searchState?.searchResults
+                            if (results != null) results()
+                            else settings.forEach {
                                 if (it is Int) {
                                     PreferenceCategory(stringResource(it))
                                 } else {
@@ -219,13 +263,20 @@ fun <T: Any?> SearchScreen(
         }
     }
 
-    val searchState = remember(showSearch, searchText, searchFieldContent) {
+    val searchResults: (@Composable () -> Unit)? =
+        if (searchText.text.isBlank()) null
+        else {
+            { SearchResults(searchText.text, filteredItems, itemContent, itemKey) }
+        }
+
+    val searchState = remember(showSearch, searchText, searchFieldContent, searchResults != null) {
         SearchState(
             showSearch = showSearch,
             searchText = searchText,
             onSearchChange = { searchText = it },
             setShowSearch = ::setShowSearch,
-            searchField = searchFieldContent
+            searchField = searchFieldContent,
+            searchResults = searchResults
         )
     }
     CompositionLocalProvider(
@@ -359,7 +410,11 @@ fun <T: Any?> SearchScreen(
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                 val contentModifier = Modifier.fillMaxSize()
 
-                if (searchText.text.isBlank() && content != null) {
+                // deliberately not switched on the search term: the screens put the search field
+                // inside their own content, and swapping that content out on the first typed
+                // character detached the field and pulled the keyboard down. Screens show
+                // SearchState.searchResults in place of their own content instead.
+                if (content != null) {
                     CompositionLocalProvider(LocalSearchInnerPadding provides innerPadding) {
                         Box(
                             modifier = Modifier

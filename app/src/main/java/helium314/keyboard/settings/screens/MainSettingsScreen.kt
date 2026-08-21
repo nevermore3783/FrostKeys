@@ -178,13 +178,19 @@ fun MainSettingsScreen(
                         else Modifier
                     )
             ) {
+                val searchState = LocalSearchState.current
+                val searchResults = searchState?.searchResults
                 LazyColumn(contentPadding = PaddingValues(top = topPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding())) {
                     item("search_bar") {
-                        val searchState = LocalSearchState.current
                         if (searchState != null) {
                             searchState.searchField()
-                            }
                         }
+                    }
+                    // the field above stays put either way; only what is below it is swapped
+                    if (searchResults != null) {
+                        item("search_results") { Column { searchResults() } }
+                        return@LazyColumn
+                    }
                     if (!telegramJoined) {
                         item("telegram_invite") {
                             TelegramInviteCard(

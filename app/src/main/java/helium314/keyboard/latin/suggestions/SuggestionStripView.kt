@@ -974,7 +974,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     private fun applyContainerVisibility(strip: Boolean, chips: Boolean, pinned: Boolean) {
         val target = ContainerState(strip, chips, pinned)
         removeCallbacks(containerSwapRunnable)
-        if (target == appliedContainers) {
+        if (target == appliedContainers && containersMatchTarget(target)) {
             pendingContainers = null
             return
         }
@@ -988,6 +988,20 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
             applyPendingContainerVisibility()
         }
     }
+
+    /**
+     * The three containers are stacked on top of each other, so one of them left visible by
+     * something other than [applyPendingContainerVisibility] covers whatever is supposed to be
+     * showing. Checking the views themselves rather than trusting [appliedContainers] means such
+     * a stray container is put back where it belongs on the next update instead of staying up.
+     */
+    private fun containersMatchTarget(target: ContainerState) =
+        isContainerShowing(suggestionsStrip) == target.strip
+                && isContainerShowing(suggestionsChipScroll) == target.chips
+                && isContainerShowing(pinnedKeys) == target.pinned
+
+    // a container on its way out is already counted as gone, its fade just has not finished yet
+    private fun isContainerShowing(view: View) = fadeTargets[view] ?: view.isVisible
 
     private fun applyPendingContainerVisibility() {
         val target = pendingContainers ?: return
@@ -1070,7 +1084,10 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         val persistentKey = Settings.getValues().mPersistentToolbarKey
         val slots = previewSlots ?: getPinnedToolbarKeys(context.prefs(), persistentKey)
         slotsState.value = slots
-        pinnedKeys.isVisible = slots.isNotEmpty()
+        // whether the container is on screen belongs to applyContainerVisibility alone. Showing it
+        // from here put the pinned keys on top of the suggestion words every time the applied
+        // state happened not to change, which is once per keystroke while typing.
+        if (slots.isEmpty()) pinnedKeys.isVisible = false
     }
 
     private fun updatePersistentToolbarKey() {

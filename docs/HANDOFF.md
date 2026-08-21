@@ -142,6 +142,24 @@ personalization without dragging settings along.
 
 Listed in the order the user is most likely to hit them.
 
+0. **Fixed after this document was written** (branch `claude/keyboard-ui-bugs-4hmcyx`):
+   items 2 and 4 below, plus pinned toolbar keys drawing on top of the suggestions.
+   - *Pinned keys over the suggestions*: `populatePinnedKeys()` set `pinnedKeys.isVisible`
+     itself while `applyContainerVisibility` skipped its work whenever the target state
+     equalled the applied one, so the container stayed up over the words. Visibility of the
+     three stacked containers now goes through `applyContainerVisibility` only, and its
+     early-out checks the views rather than trusting `appliedContainers`.
+   - *Settings search pulling the keyboard down*: the real cause was `SearchScreen` swapping
+     its whole content out for the results list on the first typed character. The search
+     field lives inside that content, so it was detached and lost focus. There is no swap any
+     more: `SearchState.searchResults` hands the results to the screen, which draws them
+     below its own (unmoved) search field - see `SearchFieldWithResults()`.
+   - *Popup panel light on dark*: the backdrop capture was posted, and on the first popup
+     after the input view is created `post()` runs before the panel has been laid out, so
+     nothing was captured and the thinned panel showed the app behind the keyboard through
+     itself. Capture now waits for a real layout via a pre-draw listener, and the panel stays
+     fully opaque whenever there is no backdrop to show through to.
+
 1. **Compose lazy-list prefetch crash in settings search.** Reported twice.
    `LayoutNode.onChildRemoved` NPE from `LazyLayoutPrefetchState`. Mitigations
    applied: filtered list is `remember`ed per query; the settings search now

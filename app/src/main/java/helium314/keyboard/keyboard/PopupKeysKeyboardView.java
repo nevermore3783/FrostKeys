@@ -125,12 +125,59 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
             setBackground(background);
             mMutatedBackground = background;
         }
-        final int alpha = sv.mPopupKeysBlur
+        // without a captured backdrop there is nothing behind the panel except the app under the
+        // keyboard window, so thinning the fill would show that through - which on a light app
+        // turns the panel white instead of leaving it the colour the theme picked
+        final int alpha = sv.mPopupKeysBlur && mBackdrop != null
                 ? Math.round(sv.mPopupKeysPanelOpacity / 100f * 255f) : 255;
         if (background.getAlpha() != alpha) {
             // guarded, since setting it unconditionally invalidates the drawable every frame
             background.setAlpha(alpha);
         }
+    }
+
+    /** waits for the panel to be laid out before grabbing what is behind it */
+    private final android.view.ViewTreeObserver.OnPreDrawListener mBackdropCaptureListener =
+            new android.view.ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+            if (getWidth() <= 0 || getHeight() <= 0) {
+                return true; // not laid out yet, try again on the next frame
+            }
+            removeBackdropCapture();
+            captureBackdrop();
+            return true;
+        }
+    };
+    private boolean mBackdropCaptureScheduled;
+
+    private void scheduleBackdropCapture() {
+        final SettingsValues sv = Settings.getValues();
+        if (sv == null || !sv.mPopupKeysBlur || sv.mPopupKeysBlurRadius <= 0) {
+            return;
+        }
+        if (mBackdropCaptureScheduled) {
+            return;
+        }
+        mBackdropCaptureScheduled = true;
+        getViewTreeObserver().addOnPreDrawListener(mBackdropCaptureListener);
+    }
+
+    private void removeBackdropCapture() {
+        if (!mBackdropCaptureScheduled) {
+            return;
+        }
+        mBackdropCaptureScheduled = false;
+        final android.view.ViewTreeObserver observer = getViewTreeObserver();
+        if (observer.isAlive()) {
+            observer.removeOnPreDrawListener(mBackdropCaptureListener);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        removeBackdropCapture();
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -286,12 +333,13 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
     private void showPopupKeysPanelInternal(final View parentView, final Controller controller,
             final int pointX, final int pointY) {
         mController = controller;
+        mBackdrop = null;
         applyPanelOpacity();
-        // grabbed once the panel has been placed, since only then is it known what it covers
-        post(() -> {
-            captureBackdrop();
-            invalidate();
-        });
+        // grabbed once the panel has been laid out, since only then is it known what it covers.
+        // A pre-draw listener rather than post(), because the first time the panel is shown it is
+        // not attached yet, and a posted runnable then runs before the panel has a size at all -
+        // which used to leave the first popup of a keyboard session without any backdrop.
+        scheduleBackdropCapture();
         final View container = getContainerView();
         // The coordinates of panel's left-top corner in parentView's coordinate system.
         // We need to consider background drawable paddings.

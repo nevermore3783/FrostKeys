@@ -12,6 +12,7 @@ import dev.chrisbanes.haze.haze
 import helium314.keyboard.settings.LocalHazeState
 import helium314.keyboard.settings.LocalSearchInnerPadding
 import helium314.keyboard.settings.LocalSearchState
+import helium314.keyboard.settings.SearchFieldWithResults
 import helium314.keyboard.settings.SearchSettingsScreen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -393,10 +394,7 @@ fun GestureDataScreen(
                             bottom = innerPadding.calculateBottomPadding()
                         ),
                 ) {
-                    val searchState = LocalSearchState.current
-                    if (searchState != null) {
-                        searchState.searchField()
-                    }
+                    if (SearchFieldWithResults()) return@Column
                     Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                         var showInfoDialog by remember { mutableStateOf(false) }
                     var showPrivacyDialog by remember { mutableStateOf(false) }

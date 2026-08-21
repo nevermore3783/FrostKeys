@@ -51,6 +51,7 @@ import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.latin.utils.protectedPrefs
 import helium314.keyboard.settings.LocalSearchInnerPadding
 import helium314.keyboard.settings.LocalSearchState
+import helium314.keyboard.settings.SearchFieldWithResults
 import helium314.keyboard.settings.Setting
 import helium314.keyboard.settings.SearchSettingsScreen
 import helium314.keyboard.settings.SettingsActivity
@@ -165,10 +166,7 @@ fun GestureLibrarySetupGuide() {
             ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val searchState = LocalSearchState.current
-        if (searchState != null) {
-            searchState.searchField()
-        }
+        if (SearchFieldWithResults()) return@Column
 
         Card(
             colors = CardDefaults.cardColors(

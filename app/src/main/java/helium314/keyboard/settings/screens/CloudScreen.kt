@@ -48,6 +48,7 @@ import dev.chrisbanes.haze.haze
 import helium314.keyboard.settings.LocalHazeState
 import helium314.keyboard.settings.LocalSearchInnerPadding
 import helium314.keyboard.settings.LocalSearchState
+import helium314.keyboard.settings.SearchFieldWithResults
 
 @Composable
 fun CloudScreen(onClickBack: () -> Unit) {
@@ -79,10 +80,7 @@ fun CloudScreen(onClickBack: () -> Unit) {
                             bottom = innerPadding.calculateBottomPadding()
                         )
                 ) {
-                    val searchState = LocalSearchState.current
-                    if (searchState != null) {
-                        searchState.searchField()
-                    }
+                    if (SearchFieldWithResults()) return@Column
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)

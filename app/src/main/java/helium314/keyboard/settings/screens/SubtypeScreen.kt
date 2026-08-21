@@ -84,6 +84,7 @@ import dev.chrisbanes.haze.haze
 import helium314.keyboard.settings.LocalHazeState
 import helium314.keyboard.settings.LocalSearchInnerPadding
 import helium314.keyboard.settings.LocalSearchState
+import helium314.keyboard.settings.SearchFieldWithResults
 import helium314.keyboard.settings.SearchScreen
 import helium314.keyboard.settings.SettingsActivity
 import helium314.keyboard.latin.utils.Theme
@@ -176,10 +177,7 @@ fun SubtypeScreen(
                         ),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    val searchState = LocalSearchState.current
-                    if (searchState != null) {
-                        searchState.searchField()
-                    }
+                    if (SearchFieldWithResults()) return@Column
                     Column(
                         modifier = Modifier.padding(horizontal = 12.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
