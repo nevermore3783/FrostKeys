@@ -82,14 +82,14 @@ Key shrink on press · Label shrink on press · Spacebar shrink on press ·
 Spacebar label shrink on press · Press brightness · Press brightness direction ·
 Press / Release animation length · Animation easing ·
 Fade suggestion strip changes · Fade length · **Wait before showing toolbar** ·
-Blur behind symbol popup · Popup blur strength · Popup panel opacity ·
 **Adjust liquid glass** (opens its own dialog)
 
 ### Settings → Preferences (Input)
 Flick keys to enter symbols · Flick rebound · Rebound shape · Rebound strength ·
 Rebound length · Spacebar cursor trackpad · Fade keys while moving ·
 Vertical sensitivity · Stick to lines · Hold spacebar for trackpad ·
-Delete swipe selects words · Keypress vibration (the haptic picker)
+Delete swipe selects words · Keypress vibration (the haptic picker) ·
+Keypress sound volume (speaker) · **Keypress sound volume (headphones)**
 
 ### Settings → Text correction
 Hide more suggestions marker (only shown when 5-word chips are off) ·
@@ -154,11 +154,16 @@ Listed in the order the user is most likely to hit them.
      field lives inside that content, so it was detached and lost focus. There is no swap any
      more: `SearchState.searchResults` hands the results to the screen, which draws them
      below its own (unmoved) search field - see `SearchFieldWithResults()`.
-   - *Popup panel light on dark*: the backdrop capture was posted, and on the first popup
-     after the input view is created `post()` runs before the panel has been laid out, so
-     nothing was captured and the thinned panel showed the app behind the keyboard through
-     itself. Capture now waits for a real layout via a pre-draw listener, and the panel stays
-     fully opaque whenever there is no backdrop to show through to.
+   - *Popup panel white on dark*: `keyboard_popup_panel_background_*` is a `layer-list`
+     whose fill is `#ffffff`, and it is only ever dark because `Colors.setBackground` puts a
+     MODULATE colour filter on it. `applyPanelOpacity()` called `mutate()` on it, and
+     `LayerDrawable.mutate()` re-creates every child from its constant state - which does not
+     carry a colour filter - so the first popup after the input view was built drew the raw
+     white shape. The next `setKeyboard()` put the filter back, which is why the second long
+     press looked right. The whole panel-opacity / backdrop-blur mechanism is gone (it existed
+     only to make the panel translucent, which is what needed the mutate), along with its three
+     settings, and `showPopupKeysPanelInternal` now re-applies the colour from the live
+     `Colors` on every open. **Do not call `mutate()` on that background again.**
 
 1. **Compose lazy-list prefetch crash in settings search.** Reported twice.
    `LayoutNode.onChildRemoved` NPE from `LazyLayoutPrefetchState`. Mitigations
@@ -170,9 +175,8 @@ Listed in the order the user is most likely to hit them.
    (which is what `SearchSettingsScreen` already uses and which has never crashed).
    File: `settings/SearchScreen.kt` ~line 380.
 
-2. **Settings search pulling the keyboard down.** Same file. Cause was the search
-   field being recycled as a lazy item; now a fixed header. Should be fixed but is
-   untested.
+2. ~~**Settings search pulling the keyboard down.**~~ See item 0 - the lazy item was
+   never the cause.
 
 3. **Suggestion strip flashing.** Root cause was *not* the crossfade: the
    suggestions go briefly empty between keystrokes, and an empty set hands the
@@ -182,18 +186,12 @@ Listed in the order the user is most likely to hit them.
    forcing container visibility directly — every write is supposed to go through
    `applyContainerVisibility`.
 
-4. **Popup panel light-on-dark.** Was thinning the fill once at open, so a
-   background coloured by the theme afterwards stayed opaque in its default
-   colour. Now re-checked every frame in `PopupKeysKeyboardView.draw()`, guarded
-   on `getAlpha()`. Untested.
+4. ~~**Popup panel light-on-dark.**~~ See item 0 - it was the `mutate()`, not the alpha.
 
-5. **Popup backdrop blur quality.** `captureBackdrop()` renders `MainKeyboardView`
-   into a small software bitmap and box-blurs it by repeated halving. With the
-   frosted theme the keyboard background is transparent (the real blur is at the
-   *window* level, behind the whole IME), so the capture is mostly key smears.
-   The panel opacity slider is what actually reveals the window blur. If the user
-   wants stronger frost, lower the default opacity (currently 65) rather than
-   raising the blur radius.
+5. ~~**Popup backdrop blur quality.**~~ Removed. The user only uses the dark theme and
+   asked for the light background to be cut out entirely, so the symbol popup is a plain
+   opaque themed panel again and `pref_popup_keys_blur*` / `pref_popup_keys_panel_opacity`
+   are gone.
 
 6. **Never verified on a device by me:** the liquid glass rim on real hardware
    (only verified by porting the shader maths to Python and rendering PNGs), the

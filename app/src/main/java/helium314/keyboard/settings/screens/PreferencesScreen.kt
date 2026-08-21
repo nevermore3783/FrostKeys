@@ -100,6 +100,8 @@ fun PreferencesScreen(
         Settings.PREF_SOUND_ON,
         if (prefs.getBoolean(Settings.PREF_SOUND_ON, Defaults.PREF_SOUND_ON))
             Settings.PREF_KEYPRESS_SOUND_VOLUME else null,
+        if (prefs.getBoolean(Settings.PREF_SOUND_ON, Defaults.PREF_SOUND_ON))
+            Settings.PREF_KEYPRESS_SOUND_VOLUME_HEADSET else null,
         Settings.PREF_SAVE_SUBTYPE_PER_APP,
         Settings.PREF_SHOW_EMOJI_DESCRIPTIONS,
         R.string.settings_category_additional_keys,
@@ -320,12 +322,30 @@ fun createPreferencesSettings(context: Context) = listOf(
             onItemFocused = { id -> feedbackManager.previewHaptic(KeyboardHaptics.byId(id), view) }
         )
     },
-    Setting(context, Settings.PREF_KEYPRESS_SOUND_VOLUME, R.string.prefs_keypress_sound_volume_settings) { setting ->
+    Setting(context, Settings.PREF_KEYPRESS_SOUND_VOLUME, R.string.prefs_keypress_sound_volume_settings,
+        R.string.prefs_keypress_sound_volume_summary
+    ) { setting ->
         val audioManager = LocalContext.current.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         SliderPreference(
             name = setting.title,
             key = setting.key,
             default = Defaults.PREF_KEYPRESS_SOUND_VOLUME,
+            description = {
+                if (it < 0) stringResource(R.string.settings_system_default)
+                else (it * 100).toInt().toString()
+            },
+            range = -0.01f..1f,
+            onValueChanged = { it?.let { audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, it) } }
+        )
+    },
+    Setting(context, Settings.PREF_KEYPRESS_SOUND_VOLUME_HEADSET, R.string.prefs_keypress_sound_volume_headset,
+        R.string.prefs_keypress_sound_volume_headset_summary
+    ) { setting ->
+        val audioManager = LocalContext.current.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        SliderPreference(
+            name = setting.title,
+            key = setting.key,
+            default = Defaults.PREF_KEYPRESS_SOUND_VOLUME_HEADSET,
             description = {
                 if (it < 0) stringResource(R.string.settings_system_default)
                 else (it * 100).toInt().toString()

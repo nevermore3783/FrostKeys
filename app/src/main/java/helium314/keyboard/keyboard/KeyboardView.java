@@ -323,18 +323,6 @@ public class KeyboardView extends View {
         return true;
     }
 
-    /**
-     * Drops the software drawing buffer. Rendering this view into a software canvas, which the
-     * symbol popup does to grab what is behind it, allocates one on a device that otherwise draws
-     * through hardware and never needs it.
-     */
-    public void releaseSoftwareBuffer() {
-        if (isHardwareAccelerated()) {
-            freeOffscreenBuffer();
-            invalidateAllKeys();
-        }
-    }
-
     private void freeOffscreenBuffer() {
         mOffscreenCanvas.setBitmap(null);
         mOffscreenCanvas.setMatrix(null);

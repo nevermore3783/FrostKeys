@@ -90,11 +90,6 @@ fun AppearanceScreen(
             Settings.PREF_STRIP_CROSSFADE_DURATION else null,
         if (prefs.getBoolean(Settings.PREF_STRIP_CROSSFADE, Defaults.PREF_STRIP_CROSSFADE))
             Settings.PREF_STRIP_SETTLE_DELAY else null,
-        Settings.PREF_POPUP_KEYS_BLUR,
-        if (prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR))
-            Settings.PREF_POPUP_KEYS_BLUR_RADIUS else null,
-        if (prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR))
-            Settings.PREF_POPUP_KEYS_PANEL_OPACITY else null,
         R.string.settings_category_miscellaneous,
         Settings.PREF_ENABLE_SPLIT_KEYBOARD,
         if (prefs.getBoolean(Settings.PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE, Defaults.PREF_ENABLE_SPLIT_KEYBOARD)
@@ -508,29 +503,6 @@ fun createAppearanceSettings(context: Context) = listOf(
             default = Defaults.PREF_STRIP_SETTLE_DELAY,
             range = 0f..600f,
             description = { stringResource(R.string.abbreviation_unit_milliseconds, it.toString()) }
-        )
-    },
-    Setting(context, Settings.PREF_POPUP_KEYS_BLUR, R.string.popup_keys_blur, R.string.popup_keys_blur_summary) {
-        SwitchPreference(it, Defaults.PREF_POPUP_KEYS_BLUR)
-    },
-    Setting(context, Settings.PREF_POPUP_KEYS_BLUR_RADIUS, R.string.popup_keys_blur_radius) { setting ->
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = Defaults.PREF_POPUP_KEYS_BLUR_RADIUS,
-            range = 10f..100f,
-            description = { "$it%" }
-        )
-    },
-    Setting(context, Settings.PREF_POPUP_KEYS_PANEL_OPACITY, R.string.popup_keys_panel_opacity,
-        R.string.popup_keys_panel_opacity_summary
-    ) { setting ->
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = Defaults.PREF_POPUP_KEYS_PANEL_OPACITY,
-            range = 20f..100f,
-            description = { "$it%" }
         )
     },
     Setting(

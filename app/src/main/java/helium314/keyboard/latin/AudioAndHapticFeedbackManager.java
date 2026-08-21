@@ -6,7 +6,10 @@
 
 package helium314.keyboard.latin;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.AudioDeviceCallback;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Vibrator;
 import android.view.View;
@@ -33,6 +36,8 @@ public final class AudioAndHapticFeedbackManager {
     private SettingsValues mSettingsValues;
     private boolean mSoundOn;
     private boolean mDoNotDisturb;
+    /** whether audio is currently going to headphones rather than to the speaker */
+    private boolean mHeadsetConnected;
 
     private static final AudioAndHapticFeedbackManager sInstance =
             new AudioAndHapticFeedbackManager();
@@ -55,6 +60,68 @@ public final class AudioAndHapticFeedbackManager {
     private void initInternal(final Context context) {
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        startWatchingHeadsets();
+    }
+
+    /**
+     * Keeps track of whether anything worn on the head is plugged in or paired, so the keypress
+     * sound can be quieter on the speaker than it is in headphones. The callback fires once with
+     * everything that is already connected when it is registered, and then on every change, so
+     * nothing has to be queried on the press itself.
+     */
+    private void startWatchingHeadsets() {
+        if (mAudioManager == null) {
+            return;
+        }
+        mAudioManager.registerAudioDeviceCallback(new AudioDeviceCallback() {
+            @Override
+            public void onAudioDevicesAdded(final AudioDeviceInfo[] addedDevices) {
+                updateHeadsetConnected();
+            }
+
+            @Override
+            public void onAudioDevicesRemoved(final AudioDeviceInfo[] removedDevices) {
+                updateHeadsetConnected();
+            }
+        }, null); // null handler means the main thread, which is where the keyboard reads this
+        updateHeadsetConnected();
+    }
+
+    private void updateHeadsetConnected() {
+        if (mAudioManager == null) {
+            return;
+        }
+        boolean connected = false;
+        for (final AudioDeviceInfo device : mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+            if (isHeadset(device)) {
+                connected = true;
+                break;
+            }
+        }
+        mHeadsetConnected = connected;
+    }
+
+    // the newer device types are compile time constants, so naming them costs nothing on a device
+    // that has never heard of them - they simply never match
+    @SuppressLint("InlinedApi")
+    private static boolean isHeadset(final AudioDeviceInfo device) {
+        return switch (device.getType()) {
+            case AudioDeviceInfo.TYPE_WIRED_HEADSET,
+                 AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+                 AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+                 AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+                 AudioDeviceInfo.TYPE_USB_HEADSET,
+                 AudioDeviceInfo.TYPE_USB_DEVICE,
+                 AudioDeviceInfo.TYPE_HEARING_AID,
+                 AudioDeviceInfo.TYPE_BLE_HEADSET,
+                 AudioDeviceInfo.TYPE_BLE_BROADCAST -> true;
+            default -> false;
+        };
+    }
+
+    /** true while the keypress sound would come out of headphones rather than the speaker */
+    public boolean isHeadsetConnected() {
+        return mHeadsetConnected;
     }
 
     public void performHapticAndAudioFeedback(
@@ -104,7 +171,10 @@ public final class AudioAndHapticFeedbackManager {
             case Constants.CODE_SPACE -> AudioManager.FX_KEYPRESS_SPACEBAR;
             default -> AudioManager.FX_KEYPRESS_STANDARD;
         };
-        mAudioManager.playSoundEffect(sound, mSettingsValues.mKeypressSoundVolume);
+        final float volume = mHeadsetConnected
+                ? mSettingsValues.mKeypressSoundVolumeHeadset
+                : mSettingsValues.mKeypressSoundVolume;
+        mAudioManager.playSoundEffect(sound, volume);
     }
 
     public void performHapticFeedback(final View viewToPerformHapticFeedbackOn, final HapticEvent hapticEvent) {

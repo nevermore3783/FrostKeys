@@ -72,8 +72,6 @@ object Defaults {
     const val PREF_KEY_PRESS_HIGHLIGHT_MODE = 0
     const val PREF_STRIP_CROSSFADE = true
     const val PREF_STRIP_CROSSFADE_DURATION = 140
-    const val PREF_POPUP_KEYS_BLUR = true
-    const val PREF_POPUP_KEYS_BLUR_RADIUS = 40
     const val PREF_SPACEBAR_TRACKPAD = false
     const val PREF_SPACEBAR_TRACKPAD_HIDE_LABELS = true
     const val PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY = 25
@@ -85,7 +83,6 @@ object Defaults {
     const val PREF_FLICK_REBOUND_DURATION = 260
     const val PREF_DELETE_SWIPE_WORDS = false
     const val PREF_STRIP_SETTLE_DELAY = 180
-    const val PREF_POPUP_KEYS_PANEL_OPACITY = 65
 
     @JvmField
     var PREF_POPUP_ON = true
@@ -143,6 +140,7 @@ object Defaults {
     @JvmField
     val PREF_KEYPRESS_HAPTIC = CrispTapHaptic.id
     const val PREF_KEYPRESS_SOUND_VOLUME = -0.01f
+    const val PREF_KEYPRESS_SOUND_VOLUME_HEADSET = -0.01f
     const val PREF_KEY_LONGPRESS_TIMEOUT = 300
     const val PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY = true
     const val PREF_GESTURE_PREVIEW_TRAIL = true

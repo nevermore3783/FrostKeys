@@ -39,8 +39,6 @@
     <string name="space_press_label_scale">Spacebar label shrink on press</string>
 
     <!-- Popup panel see through -->
-    <string name="popup_keys_panel_opacity">Popup panel opacity</string>
-    <string name="popup_keys_panel_opacity_summary">How solid the symbol popup is. Lower lets the blur behind the keyboard show through it.</string>
 
     <!-- Backup of just the data the keyboard learned from your typing -->
     <string name="learned_data_backup_title">Back up learned words</string>
@@ -85,9 +83,6 @@
     <string name="strip_crossfade">Fade suggestion strip changes</string>
     <string name="strip_crossfade_summary">Crossfades between the toolbar keys and the suggestions instead of swapping them instantly</string>
     <string name="strip_crossfade_duration">Fade length</string>
-    <string name="popup_keys_blur">Blur behind symbol popup</string>
-    <string name="popup_keys_blur_summary">Frosts the keyboard behind the symbol list that opens on a long press, instead of showing a flat translucent panel</string>
-    <string name="popup_keys_blur_radius">Popup blur strength</string>
 
     <!-- Title of the setting for entering a key's symbol by flicking down on it -->
     <string name="flick_symbol_keys">Flick keys to enter symbols</string>
@@ -816,7 +811,10 @@ language, hence "No language". -->
     <!-- Name of a haptic primitive together with its strength, e.g. "Click (light)" -->
     <string name="haptic_name_with_strength">%1$s (%2$s)</string>
     <!-- Title of the setting for keypress sound volume -->
-    <string name="prefs_keypress_sound_volume_settings">Keypress sound volume</string>
+    <string name="prefs_keypress_sound_volume_settings">Keypress sound volume (speaker)</string>
+    <string name="prefs_keypress_sound_volume_summary">Used when nothing is plugged in or paired</string>
+    <string name="prefs_keypress_sound_volume_headset">Keypress sound volume (headphones)</string>
+    <string name="prefs_keypress_sound_volume_headset_summary">Used while Bluetooth, wired, USB or hearing aid audio is connected</string>
     <!-- Title of the setting for key long press delay -->
     <string name="prefs_key_longpress_timeout_settings">Key long press delay</string>
     <!-- Title of the setting for overriding Android SDK level for showing emojis -->

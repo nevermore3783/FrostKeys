@@ -113,8 +113,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_KEY_PRESS_HIGHLIGHT_MODE = "key_press_highlight_mode";
     public static final String PREF_STRIP_CROSSFADE = "strip_crossfade";
     public static final String PREF_STRIP_CROSSFADE_DURATION = "strip_crossfade_duration";
-    public static final String PREF_POPUP_KEYS_BLUR = "popup_keys_blur";
-    public static final String PREF_POPUP_KEYS_BLUR_RADIUS = "popup_keys_blur_radius";
     public static final String PREF_SPACEBAR_TRACKPAD = "spacebar_trackpad";
     public static final String PREF_SPACEBAR_TRACKPAD_HIDE_LABELS = "spacebar_trackpad_hide_labels";
     public static final String PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY = "spacebar_trackpad_vertical_sensitivity";
@@ -126,7 +124,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_FLICK_REBOUND_DURATION = "flick_rebound_duration";
     public static final String PREF_DELETE_SWIPE_WORDS = "delete_swipe_words";
     public static final String PREF_STRIP_SETTLE_DELAY = "strip_settle_delay";
-    public static final String PREF_POPUP_KEYS_PANEL_OPACITY = "popup_keys_panel_opacity";
     public static final String PREF_AUTO_CORRECTION = "auto_correction";
     public static final String PREF_MORE_AUTO_CORRECTION = "more_auto_correction";
     public static final String PREF_AUTO_CORRECT_THRESHOLD = "auto_correct_threshold";
@@ -180,6 +177,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_GESTURE_INPUT = "gesture_input";
     public static final String PREF_KEYPRESS_HAPTIC = "keypress_haptic";
     public static final String PREF_KEYPRESS_SOUND_VOLUME = "keypress_sound_volume";
+    public static final String PREF_KEYPRESS_SOUND_VOLUME_HEADSET = "keypress_sound_volume_headset";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "key_longpress_timeout";
     public static final String PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY = "enable_emoji_alt_physical_key";
     public static final String PREF_GESTURE_PREVIEW_TRAIL = "gesture_preview_trail";

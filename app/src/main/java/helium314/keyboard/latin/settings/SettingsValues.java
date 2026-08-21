@@ -71,8 +71,6 @@ public class SettingsValues {
     public final int mKeyPressHighlightMode;
     public final boolean mStripCrossfade;
     public final int mStripCrossfadeDuration;
-    public final boolean mPopupKeysBlur;
-    public final int mPopupKeysBlurRadius;
     public final boolean mSpacebarTrackpad;
     public final boolean mSpacebarTrackpadHideLabels;
     public final int mSpacebarTrackpadVerticalSensitivity;
@@ -84,7 +82,6 @@ public class SettingsValues {
     public final int mFlickReboundDuration;
     public final boolean mDeleteSwipeWords;
     public final int mStripSettleDelay;
-    public final int mPopupKeysPanelOpacity;
     public final boolean mSpellcheckSuggest;
     public final boolean mVibrateOn;
     public final boolean mVibrateInDndMode;
@@ -187,6 +184,7 @@ public class SettingsValues {
     public final boolean mSecondaryStripVisible;
     public final KeyboardHaptic mKeypressHaptic;
     public final float mKeypressSoundVolume;
+    public final float mKeypressSoundVolumeHeadset;
     public final boolean mAutoCorrectionEnabledPerUserSettings;
     public final boolean mAutoCorrectEnabled;
     public final float mAutoCorrectionThreshold;
@@ -232,8 +230,6 @@ public class SettingsValues {
         mKeyPressHighlightMode = prefs.getInt(Settings.PREF_KEY_PRESS_HIGHLIGHT_MODE, Defaults.PREF_KEY_PRESS_HIGHLIGHT_MODE);
         mStripCrossfade = prefs.getBoolean(Settings.PREF_STRIP_CROSSFADE, Defaults.PREF_STRIP_CROSSFADE);
         mStripCrossfadeDuration = prefs.getInt(Settings.PREF_STRIP_CROSSFADE_DURATION, Defaults.PREF_STRIP_CROSSFADE_DURATION);
-        mPopupKeysBlur = prefs.getBoolean(Settings.PREF_POPUP_KEYS_BLUR, Defaults.PREF_POPUP_KEYS_BLUR);
-        mPopupKeysBlurRadius = prefs.getInt(Settings.PREF_POPUP_KEYS_BLUR_RADIUS, Defaults.PREF_POPUP_KEYS_BLUR_RADIUS);
         mSpacebarTrackpad = prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD, Defaults.PREF_SPACEBAR_TRACKPAD);
         mSpacebarTrackpadHideLabels = prefs.getBoolean(Settings.PREF_SPACEBAR_TRACKPAD_HIDE_LABELS, Defaults.PREF_SPACEBAR_TRACKPAD_HIDE_LABELS);
         mSpacebarTrackpadVerticalSensitivity = prefs.getInt(Settings.PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY, Defaults.PREF_SPACEBAR_TRACKPAD_VERTICAL_SENSITIVITY);
@@ -245,7 +241,6 @@ public class SettingsValues {
         mFlickReboundDuration = prefs.getInt(Settings.PREF_FLICK_REBOUND_DURATION, Defaults.PREF_FLICK_REBOUND_DURATION);
         mDeleteSwipeWords = prefs.getBoolean(Settings.PREF_DELETE_SWIPE_WORDS, Defaults.PREF_DELETE_SWIPE_WORDS);
         mStripSettleDelay = prefs.getInt(Settings.PREF_STRIP_SETTLE_DELAY, Defaults.PREF_STRIP_SETTLE_DELAY);
-        mPopupKeysPanelOpacity = prefs.getInt(Settings.PREF_POPUP_KEYS_PANEL_OPACITY, Defaults.PREF_POPUP_KEYS_PANEL_OPACITY);
         mSpellcheckSuggest = prefs.getBoolean(Settings.PREF_SPELLCHECK_SUGGEST, Defaults.PREF_SPELLCHECK_SUGGEST);
         mVibrateOn = Settings.readVibrationEnabled(prefs);
         mVibrateInDndMode = prefs.getBoolean(Settings.PREF_VIBRATE_IN_DND_MODE, Defaults.PREF_VIBRATE_IN_DND_MODE);
@@ -308,6 +303,7 @@ public class SettingsValues {
         mKeyLongpressTimeout = prefs.getInt(Settings.PREF_KEY_LONGPRESS_TIMEOUT, Defaults.PREF_KEY_LONGPRESS_TIMEOUT);
         mKeypressHaptic = KeyboardHaptics.fromPrefs(prefs);
         mKeypressSoundVolume = prefs.getFloat(Settings.PREF_KEYPRESS_SOUND_VOLUME, Defaults.PREF_KEYPRESS_SOUND_VOLUME);
+        mKeypressSoundVolumeHeadset = prefs.getFloat(Settings.PREF_KEYPRESS_SOUND_VOLUME_HEADSET, Defaults.PREF_KEYPRESS_SOUND_VOLUME_HEADSET);
         mEnableEmojiAltPhysicalKey = prefs.getBoolean(Settings.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY, Defaults.PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY);
         mGestureInputEnabled = JniUtils.sHaveGestureLib && prefs.getBoolean(Settings.PREF_GESTURE_INPUT, Defaults.PREF_GESTURE_INPUT);
         mGestureTrailEnabled = prefs.getBoolean(Settings.PREF_GESTURE_PREVIEW_TRAIL, Defaults.PREF_GESTURE_PREVIEW_TRAIL);
@@ -507,6 +503,8 @@ public class SettingsValues {
         sb.append("" + mKeypressHaptic.id);
         sb.append("\n   mKeypressSoundVolume = ");
         sb.append("" + mKeypressSoundVolume);
+        sb.append("\n   mKeypressSoundVolumeHeadset = ");
+        sb.append("" + mKeypressSoundVolumeHeadset);
         sb.append("\n   mAutoCorrectEnabled = ");
         sb.append("" + mAutoCorrectEnabled);
         sb.append("\n   mAutoCorrectionThreshold = ");
