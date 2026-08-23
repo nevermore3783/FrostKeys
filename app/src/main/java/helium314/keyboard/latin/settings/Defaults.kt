@@ -225,6 +225,12 @@ object Defaults {
     const val PREF_FROSTED_BG_TRANSPARENCY = 125
     const val PREF_FROSTED_SPECIAL_VIBRANCY = 100
     const val PREF_FROSTED_ALPHABET_VIBRANCY = 100
+    // special key colour adjustments, all applied on top of the Material You colours.
+    // 0 means "leave it alone" for every one of them, and a tint colour of 0 means none picked.
+    const val PREF_FROSTED_SPECIAL_BRIGHTNESS = 0
+    const val PREF_FROSTED_SPECIAL_HUE_SHIFT = 0
+    const val PREF_FROSTED_SPECIAL_TINT_COLOR = 0
+    const val PREF_FROSTED_SPECIAL_TINT_STRENGTH = 0
 
     const val PREF_FROSTED_BLUR_RADIUS_NIGHT = 65
     const val PREF_FROSTED_KEY_TRANSPARENCY_NIGHT = 64 // ~25%
@@ -233,6 +239,10 @@ object Defaults {
     const val PREF_FROSTED_BG_TRANSPARENCY_NIGHT = 80
     const val PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT = 100
     const val PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT = 100
+    const val PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT = 0
+    const val PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT = 0
+    const val PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT = 0
+    const val PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT = 0
 
     const val PREF_FROSTED_DUST_ENABLED = false
     const val PREF_FROSTED_DUST_ALPHA = 5f

@@ -983,6 +983,13 @@ New dictionary:
     <string name="pref_frosted_bg_transparency_title">Background Transparency</string>
     <string name="pref_frosted_special_vibrancy_title">Special Key Vibrance</string>
     <string name="pref_frosted_alphabet_vibrancy_title">Alphabet Key Vibrance</string>
+    <string name="pref_frosted_special_section_title">Special keys</string>
+    <string name="pref_frosted_special_section_summary">Shift, delete, symbols and enter. Every adjustment below is applied on top of the Material You colours.</string>
+    <string name="pref_frosted_special_brightness_title">Special Key Brightness</string>
+    <string name="pref_frosted_special_hue_title">Special Key Hue Shift</string>
+    <string name="pref_frosted_special_tint_title">Special Key Tint</string>
+    <string name="pref_frosted_special_tint_strength_title">Special Key Tint Strength</string>
+    <string name="pref_frosted_special_tint_none">None picked</string>
     <string name="pref_frosted_dust_enabled_title">Glass Sparkles</string>
     <string name="pref_frosted_dust_alpha_title">Sparkle Intensity</string>
     <string name="button_adjust_frosted_glass">Adjust Frosted Glass</string>

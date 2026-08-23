@@ -62,6 +62,10 @@ private data class FrostedProfileSnapshot(
     val saturation: Int,
     val specialVibrancy: Int,
     val alphabetVibrancy: Int,
+    val specialBrightness: Int,
+    val specialHueShift: Int,
+    val specialTintColor: Int,
+    val specialTintStrength: Int,
     val dustAlpha: Float
 )
 
@@ -81,6 +85,7 @@ fun FrostedGlassAdjustDialog(
     val coroutineScope = rememberCoroutineScope()
 
     var activeProfile by remember { mutableStateOf(if (helium314.keyboard.latin.utils.ResourceUtils.isNight(context.resources)) "dark" else "light") }
+    var showSpecialTintPicker by remember { mutableStateOf(false) }
 
 
     // 1. Snapshot the initial state when the dialog opens
@@ -95,6 +100,10 @@ fun FrostedGlassAdjustDialog(
                 saturation = prefs.getInt(Settings.PREF_FROSTED_SATURATION, Defaults.PREF_FROSTED_SATURATION),
                 specialVibrancy = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_VIBRANCY, Defaults.PREF_FROSTED_SPECIAL_VIBRANCY),
                 alphabetVibrancy = prefs.getInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY, Defaults.PREF_FROSTED_ALPHABET_VIBRANCY),
+                specialBrightness = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_BRIGHTNESS, Defaults.PREF_FROSTED_SPECIAL_BRIGHTNESS),
+                specialHueShift = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_HUE_SHIFT, Defaults.PREF_FROSTED_SPECIAL_HUE_SHIFT),
+                specialTintColor = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_COLOR, Defaults.PREF_FROSTED_SPECIAL_TINT_COLOR),
+                specialTintStrength = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_STRENGTH, Defaults.PREF_FROSTED_SPECIAL_TINT_STRENGTH),
                 dustAlpha = legacyDustAlpha.coerceIn(1f, 10f)
             ),
             dark = FrostedProfileSnapshot(
@@ -105,6 +114,10 @@ fun FrostedGlassAdjustDialog(
                 saturation = prefs.getInt(Settings.PREF_FROSTED_SATURATION_NIGHT, Defaults.PREF_FROSTED_SATURATION_NIGHT),
                 specialVibrancy = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT, Defaults.PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT),
                 alphabetVibrancy = prefs.getInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT, Defaults.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT),
+                specialBrightness = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT, Defaults.PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT),
+                specialHueShift = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT, Defaults.PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT),
+                specialTintColor = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT, Defaults.PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT),
+                specialTintStrength = prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT, Defaults.PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT),
                 dustAlpha = prefs.getFloat(
                     Settings.PREF_FROSTED_DUST_ALPHA_NIGHT,
                     legacyDustAlpha
@@ -129,6 +142,10 @@ fun FrostedGlassAdjustDialog(
             saturation = profile.saturation,
             specialVibrancy = profile.specialVibrancy,
             alphabetVibrancy = profile.alphabetVibrancy,
+            specialBrightness = profile.specialBrightness,
+            specialHueShift = profile.specialHueShift,
+            specialTintColor = profile.specialTintColor,
+            specialTintStrength = profile.specialTintStrength,
             dustEnabled = dustEnabled,
             dustAlpha = profile.dustAlpha.coerceIn(1f, 10f)
         )
@@ -144,6 +161,10 @@ fun FrostedGlassAdjustDialog(
             .putInt(Settings.PREF_FROSTED_SATURATION, values.light.saturation)
             .putInt(Settings.PREF_FROSTED_SPECIAL_VIBRANCY, values.light.specialVibrancy)
             .putInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY, values.light.alphabetVibrancy)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_BRIGHTNESS, values.light.specialBrightness)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_HUE_SHIFT, values.light.specialHueShift)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_TINT_COLOR, values.light.specialTintColor)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_TINT_STRENGTH, values.light.specialTintStrength)
             .putFloat(Settings.PREF_FROSTED_DUST_ALPHA, values.light.dustAlpha.coerceIn(1f, 10f))
             .putInt(Settings.PREF_FROSTED_BLUR_RADIUS_NIGHT, values.dark.blurRadius)
             .putInt(Settings.PREF_FROSTED_KEY_TRANSPARENCY_NIGHT, values.dark.keyTransparency)
@@ -152,6 +173,10 @@ fun FrostedGlassAdjustDialog(
             .putInt(Settings.PREF_FROSTED_SATURATION_NIGHT, values.dark.saturation)
             .putInt(Settings.PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT, values.dark.specialVibrancy)
             .putInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT, values.dark.alphabetVibrancy)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT, values.dark.specialBrightness)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT, values.dark.specialHueShift)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT, values.dark.specialTintColor)
+            .putInt(Settings.PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT, values.dark.specialTintStrength)
             .putFloat(Settings.PREF_FROSTED_DUST_ALPHA_NIGHT, values.dark.dustAlpha.coerceIn(1f, 10f))
             .putBoolean(Settings.PREF_FROSTED_DUST_ENABLED, values.dustEnabled)
             .commit()
@@ -185,6 +210,38 @@ fun FrostedGlassAdjustDialog(
 
     // Current profile view for easier slider binding
     val currentValues = if (activeProfile == "light") snapshot.light else snapshot.dark
+
+    // what the wheel opens on when no tint has been picked yet: the accent the dynamic palette
+    // is already built from, so the first drag is a nudge rather than a jump
+    val defaultTintSeed = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S)
+        androidx.core.content.ContextCompat.getColor(
+            context,
+            if (activeProfile == "dark") android.R.color.system_accent1_200
+            else android.R.color.system_accent1_300
+        )
+    else 0xFF9E9E9E.toInt()
+
+    if (showSpecialTintPicker) {
+        ColorPickerDialog(
+            onDismissRequest = { showSpecialTintPicker = false },
+            initialColor = if (currentValues.specialTintColor != 0) currentValues.specialTintColor else defaultTintSeed,
+            title = stringResource(R.string.pref_frosted_special_tint_title),
+            showDefault = true,
+            onDefault = {
+                updateCurrentProfile { it.copy(specialTintColor = 0, specialTintStrength = 0) }
+                showSpecialTintPicker = false
+            },
+            onConfirmed = { picked ->
+                updateCurrentProfile {
+                    it.copy(
+                        specialTintColor = picked,
+                        // picking a colour with the mix at zero would look like nothing happened
+                        specialTintStrength = if (it.specialTintStrength == 0) 50 else it.specialTintStrength
+                    )
+                }
+            }
+        )
+    }
 
     // 3. The Tab Switch Effect is now handled explicitly in the Tab onClick to prevent "redraw floods"
     // during the unmounting process.
@@ -531,6 +588,26 @@ fun FrostedGlassAdjustDialog(
                             )
                         }
 
+                        // Special keys: everything below is layered on top of the Material You
+                        // colour the keyboard works out for them, so 0 leaves them dynamic
+                        HorizontalDivider(
+                            modifier = Modifier.padding(top = 16.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
+                            thickness = 1.dp
+                        )
+                        Text(
+                            text = stringResource(R.string.pref_frosted_special_section_title),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 12.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.pref_frosted_special_section_summary),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+
                         // Slider 6: Special Key Vibrance
                         Column(modifier = Modifier.padding(vertical = 8.dp)) {
                             Text(
@@ -545,6 +622,112 @@ fun FrostedGlassAdjustDialog(
                                 valueRange = 0f..500f
                             )
                         }
+
+                        // Slider 6b: Special Key Brightness (lighten / darken)
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = "${stringResource(R.string.pref_frosted_special_brightness_title)}: ${
+                                    if (currentValues.specialBrightness > 0) "+" else ""
+                                }${currentValues.specialBrightness}%",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Slider(
+                                value = currentValues.specialBrightness.toFloat(),
+                                onValueChange = { newValue ->
+                                    updateCurrentProfile { it.copy(specialBrightness = newValue.toInt()) }
+                                },
+                                valueRange = -100f..100f
+                            )
+                        }
+
+                        // Slider 6c: Special Key Hue Shift
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = "${stringResource(R.string.pref_frosted_special_hue_title)}: ${
+                                    if (currentValues.specialHueShift > 0) "+" else ""
+                                }${currentValues.specialHueShift}\u00B0",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Slider(
+                                value = currentValues.specialHueShift.toFloat(),
+                                onValueChange = { newValue ->
+                                    updateCurrentProfile { it.copy(specialHueShift = newValue.toInt()) }
+                                },
+                                valueRange = -180f..180f
+                            )
+                        }
+
+                        // Special Key Tint: a colour to pull the special keys towards
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .clickable { showSpecialTintPicker = true }
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.pref_frosted_special_tint_title),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = if (currentValues.specialTintColor == 0)
+                                        stringResource(R.string.pref_frosted_special_tint_none)
+                                    else "#%08X".format(currentValues.specialTintColor),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(RoundedCornerShape(percent = 50))
+                                    .background(
+                                        if (currentValues.specialTintColor == 0) Color.Transparent
+                                        else Color(currentValues.specialTintColor)
+                                    )
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                                        RoundedCornerShape(percent = 50)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (currentValues.specialTintColor == 0)
+                                    Text("\u2014", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+
+                        // Slider 6d: how far towards the tint the special keys are pulled
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = "${stringResource(R.string.pref_frosted_special_tint_strength_title)}: ${currentValues.specialTintStrength}%",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (currentValues.specialTintColor == 0)
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                else MaterialTheme.colorScheme.onSurface
+                            )
+                            Slider(
+                                value = currentValues.specialTintStrength.toFloat(),
+                                onValueChange = { newValue ->
+                                    updateCurrentProfile { it.copy(specialTintStrength = newValue.toInt()) }
+                                },
+                                valueRange = 0f..100f,
+                                enabled = currentValues.specialTintColor != 0
+                            )
+                        }
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
+                            thickness = 1.dp
+                        )
 
                         // Slider 7: Alphabet Key Vibrance
                         Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -627,6 +810,10 @@ fun FrostedGlassAdjustDialog(
                                             saturation = Defaults.PREF_FROSTED_SATURATION,
                                             specialVibrancy = Defaults.PREF_FROSTED_SPECIAL_VIBRANCY,
                                             alphabetVibrancy = Defaults.PREF_FROSTED_ALPHABET_VIBRANCY,
+                                            specialBrightness = Defaults.PREF_FROSTED_SPECIAL_BRIGHTNESS,
+                                            specialHueShift = Defaults.PREF_FROSTED_SPECIAL_HUE_SHIFT,
+                                            specialTintColor = Defaults.PREF_FROSTED_SPECIAL_TINT_COLOR,
+                                            specialTintStrength = Defaults.PREF_FROSTED_SPECIAL_TINT_STRENGTH,
                                             dustAlpha = Defaults.PREF_FROSTED_DUST_ALPHA
                                         )
                                     } else {
@@ -638,6 +825,10 @@ fun FrostedGlassAdjustDialog(
                                             saturation = Defaults.PREF_FROSTED_SATURATION_NIGHT,
                                             specialVibrancy = Defaults.PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT,
                                             alphabetVibrancy = Defaults.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT,
+                                            specialBrightness = Defaults.PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT,
+                                            specialHueShift = Defaults.PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT,
+                                            specialTintColor = Defaults.PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT,
+                                            specialTintStrength = Defaults.PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT,
                                             dustAlpha = Defaults.PREF_FROSTED_DUST_ALPHA_NIGHT
                                         )
                                     }

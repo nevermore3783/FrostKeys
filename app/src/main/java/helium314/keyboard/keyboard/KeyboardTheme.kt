@@ -44,7 +44,12 @@ data class FrostedLiveValues(
     val specialVibrancy: Int,
     val alphabetVibrancy: Int,
     val dustEnabled: Boolean,
-    val dustAlpha: Float
+    val dustAlpha: Float,
+    /** all four leave the special keys alone at 0, so an older stored set of values still means "unchanged" */
+    val specialBrightness: Int = 0,
+    val specialHueShift: Int = 0,
+    val specialTintColor: Int = 0,
+    val specialTintStrength: Int = 0
 )
 
 @Serializable
@@ -219,6 +224,20 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                         val alphabetVibrancyVal = (livePreviewValues?.alphabetVibrancy
                             ?: (if (isNight) prefs.getInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT, Defaults.PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT)
                                 else prefs.getInt(Settings.PREF_FROSTED_ALPHABET_VIBRANCY, Defaults.PREF_FROSTED_ALPHABET_VIBRANCY))) / 100f
+                        // the special key adjustments below sit on top of everything Material You
+                        // works out, so each of them is a no-op at 0 and the keys stay dynamic
+                        val specialBrightnessVal = (livePreviewValues?.specialBrightness
+                            ?: (if (isNight) prefs.getInt(Settings.PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT, Defaults.PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT)
+                                else prefs.getInt(Settings.PREF_FROSTED_SPECIAL_BRIGHTNESS, Defaults.PREF_FROSTED_SPECIAL_BRIGHTNESS))) / 100f
+                        val specialHueShiftVal = (livePreviewValues?.specialHueShift
+                            ?: (if (isNight) prefs.getInt(Settings.PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT, Defaults.PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT)
+                                else prefs.getInt(Settings.PREF_FROSTED_SPECIAL_HUE_SHIFT, Defaults.PREF_FROSTED_SPECIAL_HUE_SHIFT))).toFloat()
+                        val specialTintColorVal = livePreviewValues?.specialTintColor
+                            ?: (if (isNight) prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT, Defaults.PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT)
+                                else prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_COLOR, Defaults.PREF_FROSTED_SPECIAL_TINT_COLOR))
+                        val specialTintStrengthVal = (livePreviewValues?.specialTintStrength
+                            ?: (if (isNight) prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT, Defaults.PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT)
+                                else prefs.getInt(Settings.PREF_FROSTED_SPECIAL_TINT_STRENGTH, Defaults.PREF_FROSTED_SPECIAL_TINT_STRENGTH))) / 100f
 
                         val boostSaturation = { color: Int ->
                             val alpha = android.graphics.Color.alpha(color)
@@ -235,6 +254,42 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                             hsl[1] = (hsl[1] * specialVibrancyVal).coerceIn(0f, 1f)
                             val saturatedColor = ColorUtils.HSLToColor(hsl)
                             ColorUtils.setAlphaComponent(saturatedColor, alpha)
+                        }
+                        /**
+                         * Hue, then tint, then lightness, applied to whatever the dynamic palette
+                         * produced for the special keys. Lightness moves a proportion of the way
+                         * towards white or black rather than being set outright, so the middle of
+                         * the slider stays gentle on colours that are already light or already
+                         * dark; the ends still reach white and black. The alpha that the frosted
+                         * look depends on is carried through every step untouched.
+                         */
+                        val adjustSpecialColor = { color: Int ->
+                            val alpha = android.graphics.Color.alpha(color)
+                            var out = color
+                            if (specialHueShiftVal != 0f) {
+                                val hsl = FloatArray(3)
+                                ColorUtils.colorToHSL(out, hsl)
+                                hsl[0] = ((hsl[0] + specialHueShiftVal) % 360f + 360f) % 360f
+                                out = ColorUtils.HSLToColor(hsl)
+                            }
+                            if (specialTintStrengthVal > 0f && specialTintColorVal != 0) {
+                                out = ColorUtils.blendARGB(
+                                    ColorUtils.setAlphaComponent(out, 255),
+                                    ColorUtils.setAlphaComponent(specialTintColorVal, 255),
+                                    specialTintStrengthVal.coerceIn(0f, 1f)
+                                )
+                            }
+                            if (specialBrightnessVal != 0f) {
+                                val hsl = FloatArray(3)
+                                ColorUtils.colorToHSL(out, hsl)
+                                hsl[2] = if (specialBrightnessVal > 0f)
+                                    hsl[2] + (1f - hsl[2]) * specialBrightnessVal
+                                else
+                                    hsl[2] * (1f + specialBrightnessVal)
+                                hsl[2] = hsl[2].coerceIn(0f, 1f)
+                                out = ColorUtils.HSLToColor(hsl)
+                            }
+                            ColorUtils.setAlphaComponent(out, alpha)
                         }
                         val boostAlphabetSaturation = { color: Int ->
                             val alpha = android.graphics.Color.alpha(color)
@@ -294,7 +349,10 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                             val finalBlendRatio = (colorBlendVal * 0.6f * specialVibrancyVal).coerceIn(0f, 1f)
                             ColorUtils.blendARGB(baseColor, accentColor, finalBlendRatio)
                         }
-                        val specialKeyBackground = boostSpecialSaturation(ColorUtils.setAlphaComponent(specialBgBase, keyAlpha))
+                        val specialKeyBackground = adjustSpecialColor(
+                            boostSpecialSaturation(ColorUtils.setAlphaComponent(specialBgBase, keyAlpha)))
+                        // the enter key has always shared the special key colour here, so it keeps
+                        // following it rather than drifting away once the adjustments are used
                         val enterKeyBackground = specialKeyBackground
 
                         val keyText = if (isNight) ContextCompat.getColor(context, android.R.color.system_neutral1_50)

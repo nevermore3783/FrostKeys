@@ -73,6 +73,10 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_FROSTED_BG_TRANSPARENCY = "pref_frosted_bg_transparency";
     public static final String PREF_FROSTED_SPECIAL_VIBRANCY = "pref_frosted_special_vibrancy";
     public static final String PREF_FROSTED_ALPHABET_VIBRANCY = "pref_frosted_alphabet_vibrancy";
+    public static final String PREF_FROSTED_SPECIAL_BRIGHTNESS = "pref_frosted_special_brightness";
+    public static final String PREF_FROSTED_SPECIAL_HUE_SHIFT = "pref_frosted_special_hue_shift";
+    public static final String PREF_FROSTED_SPECIAL_TINT_COLOR = "pref_frosted_special_tint_color";
+    public static final String PREF_FROSTED_SPECIAL_TINT_STRENGTH = "pref_frosted_special_tint_strength";
 
     public static final String PREF_FROSTED_BLUR_RADIUS_NIGHT = "pref_frosted_blur_radius_night";
     public static final String PREF_FROSTED_KEY_TRANSPARENCY_NIGHT = "pref_frosted_key_transparency_night";
@@ -81,6 +85,10 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_FROSTED_BG_TRANSPARENCY_NIGHT = "pref_frosted_bg_transparency_night";
     public static final String PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT = "pref_frosted_special_vibrancy_night";
     public static final String PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT = "pref_frosted_alphabet_vibrancy_night";
+    public static final String PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT = "pref_frosted_special_brightness_night";
+    public static final String PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT = "pref_frosted_special_hue_shift_night";
+    public static final String PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT = "pref_frosted_special_tint_color_night";
+    public static final String PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT = "pref_frosted_special_tint_strength_night";
     public static final String PREF_FROSTED_DUST_ENABLED = "pref_frosted_dust_enabled";
     public static final String PREF_FROSTED_DUST_ALPHA = "pref_frosted_dust_alpha";
     public static final String PREF_FROSTED_DUST_ALPHA_NIGHT = "pref_frosted_dust_alpha_night";
@@ -289,6 +297,10 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
             add(PREF_FROSTED_BG_TRANSPARENCY);
             add(PREF_FROSTED_SPECIAL_VIBRANCY);
             add(PREF_FROSTED_ALPHABET_VIBRANCY);
+            add(PREF_FROSTED_SPECIAL_BRIGHTNESS);
+            add(PREF_FROSTED_SPECIAL_HUE_SHIFT);
+            add(PREF_FROSTED_SPECIAL_TINT_COLOR);
+            add(PREF_FROSTED_SPECIAL_TINT_STRENGTH);
             add(PREF_FROSTED_BLUR_RADIUS_NIGHT);
             add(PREF_FROSTED_KEY_TRANSPARENCY_NIGHT);
             add(PREF_FROSTED_COLOR_BLEND_NIGHT);
@@ -296,6 +308,10 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
             add(PREF_FROSTED_BG_TRANSPARENCY_NIGHT);
             add(PREF_FROSTED_SPECIAL_VIBRANCY_NIGHT);
             add(PREF_FROSTED_ALPHABET_VIBRANCY_NIGHT);
+            add(PREF_FROSTED_SPECIAL_BRIGHTNESS_NIGHT);
+            add(PREF_FROSTED_SPECIAL_HUE_SHIFT_NIGHT);
+            add(PREF_FROSTED_SPECIAL_TINT_COLOR_NIGHT);
+            add(PREF_FROSTED_SPECIAL_TINT_STRENGTH_NIGHT);
             add(PREF_FROSTED_DUST_ENABLED);
             add(PREF_FROSTED_DUST_ALPHA);
             add(PREF_FROSTED_DUST_ALPHA_NIGHT);

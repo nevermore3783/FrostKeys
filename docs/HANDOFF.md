@@ -117,6 +117,14 @@ flat top edge instead of only lighting corners. Own `pref_liquid_*` keys, own
 dialog, light/dark profiles, off by default. Values cached in `LiquidGlass`;
 `invalidateCache()` on any pref change.
 
+**Special key colour adjustments** (`KeyboardTheme.getThemeColors`, THEME_FROSTED_GLASS branch) —
+`adjustSpecialColor` runs hue shift, then a blend towards a picked tint colour, then a lightness
+move, over the colour the Material You palette already produced. Every knob is a no-op at 0, so
+the keys stay fully dynamic until one is touched, and the key's alpha survives all three steps.
+Lives in the **Adjust frosted glass** dialog under a "Special keys" heading, per light/dark
+profile, and drives `ENTER_KEY_BACKGROUND` too since that has always shared the colour. Note a
+hue shift alone does nothing to a near-grey base - that is what the tint colour is for.
+
 **Keypress animations** (`keyboard/internal/KeyPressAnimator.java`) — a per-key
 0..1 value **sampled during drawing**, not driven by an `Animator`. That is
 deliberate: it lands on whatever rate the view is drawn at, so 120 Hz works with
